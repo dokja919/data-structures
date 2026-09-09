@@ -4,23 +4,23 @@
 
 void a_test(void)
 {
-    ABinaryTree *bt = a_create();
+    ABinaryTree *tree = a_create();
 
     int datas[] = {10, 20, 30, 40, 50, 60, 70};
     for (int i = 0; i < 7; i++) {
-        a_insert(bt, datas[i]);
+        a_insert(tree, datas[i]);
     }
 
-    a_print(bt);
+    a_print(tree);
 
     printf("\n");
-    printf("left of 20: %d\n", a_get_left(bt, 1));
+    printf("left of 20: %d\n", a_get_left(tree, 1));
 
-    printf("right of 20: %d\n", a_get_right(bt, 1));
+    printf("right of 20: %d\n", a_get_right(tree, 1));
 
-    printf("parent of 50: %d\n", a_get_parent(bt, 4));
+    printf("parent of 50: %d\n", a_get_parent(tree, 4));
 
-    a_destroy(bt);
+    a_destroy(tree);
 }
 
 void l_test(void)

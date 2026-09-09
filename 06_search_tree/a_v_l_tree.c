@@ -32,21 +32,21 @@ static void avl_inorder(AVLNode *node);
 
 AVLOrderedSet *avl_create(void)
 {
-    AVLOrderedSet *st = malloc(sizeof(AVLOrderedSet));
-    if (st == NULL) {
+    AVLOrderedSet *tree = malloc(sizeof(AVLOrderedSet));
+    if (tree == NULL) {
         return NULL;
     }
-    st->root = NULL;
+    tree->root = NULL;
 
-    return st;
+    return tree;
 }
-void avl_destroy(AVLOrderedSet *st)
+void avl_destroy(AVLOrderedSet *tree)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return;
     }
-    avl_subtree_destroy(st->root);
-    free(st);
+    avl_subtree_destroy(tree->root);
+    free(tree);
 }
 static AVLNode *avl_node_create(int key)
 {
@@ -144,12 +144,12 @@ static AVLNode *avl_rebalance(AVLNode *node)
     }
     return node;
 }
-void avl_insert(AVLOrderedSet *st, int key)
+void avl_insert(AVLOrderedSet *tree, int key)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return;
     }
-    st->root = avl_node_insert(st->root, key);
+    tree->root = avl_node_insert(tree->root, key);
 }
 static AVLNode *avl_node_insert(AVLNode *node, int key)
 {
@@ -165,12 +165,12 @@ static AVLNode *avl_node_insert(AVLNode *node, int key)
     }
     return avl_rebalance(node);
 }
-void avl_delete(AVLOrderedSet *st, int key)
+void avl_delete(AVLOrderedSet *tree, int key)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return;
     }
-    st->root = avl_node_delete(st->root, key);
+    tree->root = avl_node_delete(tree->root, key);
 }
 static AVLNode *avl_node_delete(AVLNode *node, int key)
 {
@@ -210,12 +210,12 @@ static AVLNode *avl_get_min(AVLNode *node)
     }
     return node;
 }
-AVLNode *avl_search(AVLOrderedSet *st, int key)
+AVLNode *avl_search(AVLOrderedSet *tree, int key)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return NULL;
     }
-    AVLNode *target = st->root;
+    AVLNode *target = tree->root;
     while (target != NULL) {
         if (key == target->data.key) {
             return target;
@@ -234,12 +234,12 @@ int avl_get(AVLNode *node)
     }
     return node->data.key;
 }
-void avl_print(AVLOrderedSet *st)
+void avl_print(AVLOrderedSet *tree)
 {
-    if (st == NULL || st->root == NULL) {
+    if (tree == NULL || tree->root == NULL) {
         return;
     }
-    avl_inorder(st->root);
+    avl_inorder(tree->root);
     printf("\n");
 }
 static void avl_inorder(AVLNode *node)

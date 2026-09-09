@@ -20,30 +20,30 @@ static BSNode *bs_node_create(int key);
 static void bs_node_destroy(BSNode *node);
 static void bs_subtree_destroy(BSNode *subtree);
 static BSNode *bs_node_insert(BSNode *node, int key);
-static void bs_transplant(BSOrderedSet *st, BSNode *parent,
+static void bs_transplant(BSOrderedSet *tree, BSNode *parent,
                           BSNode *old_subtree, BSNode *new_subtree);
 static BSNode *bs_get_min(BSNode *node);
 static void bs_inorder(BSNode *node);
 
 BSOrderedSet *bs_create(void)
 {
-    BSOrderedSet *st = malloc(sizeof(BSOrderedSet));
-    if (st == NULL) {
+    BSOrderedSet *tree = malloc(sizeof(BSOrderedSet));
+    if (tree == NULL) {
         return NULL;
     }
 
-    st->root = NULL;
+    tree->root = NULL;
 
-    return st;
+    return tree;
 }
-void bs_destroy(BSOrderedSet *st)
+void bs_destroy(BSOrderedSet *tree)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return;
     }
 
-    bs_subtree_destroy(st->root);
-    free(st);
+    bs_subtree_destroy(tree->root);
+    free(tree);
 }
 static BSNode *bs_node_create(int key)
 {
@@ -71,12 +71,12 @@ static void bs_subtree_destroy(BSNode *subtree)
     bs_subtree_destroy(subtree->right);
     bs_node_destroy(subtree);
 }
-void bs_insert(BSOrderedSet *st, int key)
+void bs_insert(BSOrderedSet *tree, int key)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return;
     }
-    st->root = bs_node_insert(st->root, key);
+    tree->root = bs_node_insert(tree->root, key);
 }
 static BSNode *bs_node_insert(BSNode *node, int key)
 {
@@ -90,25 +90,25 @@ static BSNode *bs_node_insert(BSNode *node, int key)
     }
     return node;
 }
-static void bs_transplant(BSOrderedSet *st, BSNode *parent,
+static void bs_transplant(BSOrderedSet *tree, BSNode *parent,
                           BSNode *old_subtree, BSNode *new_subtree)
 {
     if (parent == NULL) {
-        st->root = new_subtree;
+        tree->root = new_subtree;
     } else if (old_subtree == parent->left) {
         parent->left = new_subtree;
     } else {
         parent->right = new_subtree;
     }
 }
-void bs_delete(BSOrderedSet *st, int key)
+void bs_delete(BSOrderedSet *tree, int key)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return;
     }
     ///////////
     BSNode *target_parent = NULL;
-    BSNode *target = st->root;
+    BSNode *target = tree->root;
     while (target && target->data.key != key) {
         target_parent = target;
         if (key < target->data.key) {
@@ -124,7 +124,7 @@ void bs_delete(BSOrderedSet *st, int key)
     if (target->left == NULL || target->right == NULL) {
         BSNode *child = target->left ? target->left : target->right;
 
-        bs_transplant(st, target_parent, target, child);
+        bs_transplant(tree, target_parent, target, child);
         bs_node_destroy(target);
         return;
     }
@@ -137,10 +137,10 @@ void bs_delete(BSOrderedSet *st, int key)
     }
     ///////////
     if (succ != target->right) {
-        bs_transplant(st, succ_parent, succ, succ->right);
+        bs_transplant(tree, succ_parent, succ, succ->right);
         succ->right = target->right;
     }
-    bs_transplant(st, target_parent, target, succ);
+    bs_transplant(tree, target_parent, target, succ);
     succ->left = target->left;
     bs_node_destroy(target);
 }
@@ -154,12 +154,12 @@ static BSNode *bs_get_min(BSNode *node)
     }
     return node;
 }
-BSNode *bs_search(BSOrderedSet *st, int key)
+BSNode *bs_search(BSOrderedSet *tree, int key)
 {
-    if (st == NULL) {
+    if (tree == NULL) {
         return NULL;
     }
-    BSNode *target = st->root;
+    BSNode *target = tree->root;
     while (target != NULL) {
         if (key == target->data.key) {
             return target;
@@ -178,12 +178,12 @@ int bs_get(BSNode *node)
     }
     return node->data.key;
 }
-void bs_print(BSOrderedSet *st)
+void bs_print(BSOrderedSet *tree)
 {
-    if (st == NULL || st->root == NULL) {
+    if (tree == NULL || tree->root == NULL) {
         return;
     }
-    bs_inorder(st->root);
+    bs_inorder(tree->root);
     printf("\n");
 }
 static void bs_inorder(BSNode *node)

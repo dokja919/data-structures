@@ -11,10 +11,10 @@ typedef struct RBNode RBNode;
 typedef struct RedBlackTree RBOrderedSet;
 
 RBOrderedSet *rb_create(void);
-void rb_destroy(RBOrderedSet *st);
-void rb_insert(RBOrderedSet *st, RBItem key);
-RBNode *rb_search(RBOrderedSet *st, RBItem key);
-void rb_delete(RBOrderedSet *st, RBItem key);
-void rb_print(RBOrderedSet *st);
+void rb_destroy(RBOrderedSet *tree);
+void rb_insert(RBOrderedSet *tree, RBItem key);
+RBNode *rb_search(RBOrderedSet *tree, RBItem key);
+void rb_delete(RBOrderedSet *tree, RBItem key);
+void rb_print(RBOrderedSet *tree);
 
 #endif

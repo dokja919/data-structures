@@ -15,89 +15,89 @@ struct ArrayBinaryTree {
 
 ABinaryTree *a_create(void)
 {
-    ABinaryTree *bt = malloc(sizeof(ABinaryTree));
-    if (bt == NULL) {
+    ABinaryTree *tree = malloc(sizeof(ABinaryTree));
+    if (tree == NULL) {
         return NULL;
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    bt->items = malloc(sizeof(AItem) * capacity);
-    if (bt->items == NULL) {
-        free(bt);
+    tree->items = malloc(sizeof(AItem) * capacity);
+    if (tree->items == NULL) {
+        free(tree);
         return NULL;
     }
-    bt->capacity = capacity;
-    bt->size = 0;
+    tree->capacity = capacity;
+    tree->size = 0;
 
-    return bt;
+    return tree;
 }
-void a_destroy(ABinaryTree *bt)
+void a_destroy(ABinaryTree *tree)
 {
-    if (bt == NULL) {
+    if (tree == NULL) {
         return;
     }
-    free(bt->items);
-    free(bt);
+    free(tree->items);
+    free(tree);
 }
-void a_insert(ABinaryTree *bt, int value)
+void a_insert(ABinaryTree *tree, int value)
 {
-    if (bt == NULL) {
-        return;
-    }
-
-    if (bt->size == bt->capacity) {
+    if (tree == NULL) {
         return;
     }
 
-    bt->items[bt->size].value = value;
-    bt->size++;
+    if (tree->size == tree->capacity) {
+        return;
+    }
+
+    tree->items[tree->size].value = value;
+    tree->size++;
 }
-int a_get_parent(ABinaryTree *bt, size_t child_pos)
+int a_get_parent(ABinaryTree *tree, size_t child_pos)
 {
-    if (a_is_empty(bt) || child_pos == 0 || child_pos >= bt->size) {
+    if (a_is_empty(tree) || child_pos == 0 || child_pos >= tree->size) {
         return 0;
     }
     size_t parent_pos = (child_pos - 1) / 2;
 
-    return bt->items[parent_pos].value;
+    return tree->items[parent_pos].value;
 }
-int a_get_left(ABinaryTree *bt, size_t parent_pos)
+int a_get_left(ABinaryTree *tree, size_t parent_pos)
 {
-    if (a_is_empty(bt) || parent_pos >= bt->size) {
+    if (a_is_empty(tree) || parent_pos >= tree->size) {
         return 0;
     }
     size_t left_pos = 2 * parent_pos + 1;
-    if (left_pos >= bt->size) {
+    if (left_pos >= tree->size) {
         return 0;
     }
-    return bt->items[left_pos].value;
+    return tree->items[left_pos].value;
 }
-int a_get_right(ABinaryTree *bt, size_t parent_pos)
+int a_get_right(ABinaryTree *tree, size_t parent_pos)
 {
-    if (a_is_empty(bt) || parent_pos >= bt->size) {
+    if (a_is_empty(tree) || parent_pos >= tree->size) {
         return 0;
     }
 
     size_t right_pos = 2 * parent_pos + 2;
-    if (right_pos >= bt->size) {
+    if (right_pos >= tree->size) {
         return 0;
     }
-    return bt->items[right_pos].value;
+    return tree->items[right_pos].value;
 }
-void a_print(ABinaryTree *bt)
+void a_print(ABinaryTree *tree)
 {
-    if (bt == NULL) {
+    if (tree == NULL) {
         return;
     }
-    for (size_t i = 0; i < bt->size; i++) {
-        printf("index %zu : %d\n", i, bt->items[i].value);
+    for (size_t i = 0; i < tree->size; i++) {
+        printf("index %zu : %d\n", i, tree->items[i].value);
     }
 }
-bool a_is_empty(ABinaryTree *bt)
+bool a_is_empty(ABinaryTree *tree)
 {
-    return bt == NULL || bt->size == 0;
+    return tree == NULL || tree->size == 0;
 }
-size_t a_size(ABinaryTree *bt)
+size_t a_size(ABinaryTree *tree)
 {
-    return bt ? bt->size : 0;
+    return tree ? tree->size : 0;
 }
