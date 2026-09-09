@@ -7,11 +7,11 @@ typedef struct AVLNode AVLNode;
 typedef struct AVLTree AVLOrderedSet;
 
 AVLOrderedSet *avl_create(void);
-void avl_destroy(AVLOrderedSet *os);
-void avl_insert(AVLOrderedSet *os, int key);
-void avl_delete(AVLOrderedSet *os, int key);
-AVLNode *avl_search(AVLOrderedSet *os, int key);
+void avl_destroy(AVLOrderedSet *st);
+void avl_insert(AVLOrderedSet *st, int key);
+void avl_delete(AVLOrderedSet *st, int key);
+AVLNode *avl_search(AVLOrderedSet *st, int key);
 int avl_get(AVLNode *node);
-void avl_print(AVLOrderedSet *os);
+void avl_print(AVLOrderedSet *st);
 
 #endif

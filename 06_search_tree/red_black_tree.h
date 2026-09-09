@@ -14,7 +14,7 @@ RBOrderedSet *rb_create(void);
 void rb_destroy(RBOrderedSet *st);
 void rb_insert(RBOrderedSet *st, RBItem key);
 RBNode *rb_search(RBOrderedSet *st, RBItem key);
-int rb_delete(RBOrderedSet *st, RBItem key);
+void rb_delete(RBOrderedSet *st, RBItem key);
 void rb_print(RBOrderedSet *st);
 
 #endif

@@ -17,11 +17,11 @@ struct RedBlackTree {
 static RBNode *rb_node_create(RBItem key);
 static void rb_node_destroy(RBNode *node);
 static void rb_subtree_destroy(RBOrderedSet *st, RBNode *node);
-static void rb_rotate_left(RBOrderedSet *st, RBNode *node);
-static void rb_rotate_right(RBOrderedSet *st, RBNode *node);
-static void rb_insert_fixup(RBOrderedSet *st, RBNode *node);
-static void rb_transplant(RBOrderedSet *st, RBNode *ol_node, RBNode *new_node);
-static void rb_delete_fixup(RBOrderedSet *st, RBNode *node);
+static void rb_rotate_left(RBOrderedSet *st, RBNode *x);
+static void rb_rotate_right(RBOrderedSet *st, RBNode *y);
+static void rb_insert_fixup(RBOrderedSet *st, RBNode *new_node);
+static void rb_transplant(RBOrderedSet *st, RBNode *old_subtree, RBNode *new_subtree);
+static void rb_delete_fixup(RBOrderedSet *st, RBNode *current);
 static void rb_node_print(RBOrderedSet *st, RBNode *node, int depth, int black_count);
 static RBNode *rb_node_search(RBOrderedSet *st, RBNode *node, RBItem key);
 static RBNode *rb_get_min(RBOrderedSet *st, RBNode *node);
@@ -163,10 +163,10 @@ void rb_insert(RBOrderedSet *st, RBItem key)
     }
     rb_insert_fixup(st, new_node);
 }
-static void rb_insert_fixup(RBOrderedSet *st, RBNode *z)
+static void rb_insert_fixup(RBOrderedSet *st, RBNode *new_node)
 {
-    while (z->parent->color == RED) {
-        RBNode *parent = z->parent;
+    while (new_node->parent->color == RED) {
+        RBNode *parent = new_node->parent;
 
         if (parent == parent->parent->left) {
             RBNode *uncle = parent->parent->right;
@@ -175,12 +175,12 @@ static void rb_insert_fixup(RBOrderedSet *st, RBNode *z)
                 parent->color = BLACK;
                 uncle->color = BLACK;
                 parent->parent->color = RED;
-                z = parent->parent;
+                new_node = parent->parent;
             } else {
-                if (z == parent->right) {
-                    z = parent;
-                    rb_rotate_left(st, z);
-                    parent = z->parent;
+                if (new_node == parent->right) {
+                    new_node = parent;
+                    rb_rotate_left(st, new_node);
+                    parent = new_node->parent;
                 }
                 parent->color = BLACK;
                 parent->parent->color = RED;
@@ -193,12 +193,12 @@ static void rb_insert_fixup(RBOrderedSet *st, RBNode *z)
                 parent->color = BLACK;
                 uncle->color = BLACK;
                 parent->parent->color = RED;
-                z = parent->parent;
+                new_node = parent->parent;
             } else {
-                if (z == parent->left) {
-                    z = parent;
-                    rb_rotate_right(st, z);
-                    parent = z->parent;
+                if (new_node == parent->left) {
+                    new_node = parent;
+                    rb_rotate_right(st, new_node);
+                    parent = new_node->parent;
                 }
                 parent->color = BLACK;
                 parent->parent->color = RED;
@@ -208,115 +208,128 @@ static void rb_insert_fixup(RBOrderedSet *st, RBNode *z)
     }
     st->root->color = BLACK;
 }
-static void rb_transplant(RBOrderedSet *st, RBNode *u, RBNode *v)
+static void rb_transplant(RBOrderedSet *st, RBNode *old_subtree, RBNode *new_subtree)
 {
-    if (u->parent == st->nil) {
-        st->root = v;
-    } else if (u == u->parent->left) {
-        u->parent->left = v;
+    if (old_subtree->parent == st->nil) {
+        st->root = new_subtree;
+    } else if (old_subtree == old_subtree->parent->left) {
+        old_subtree->parent->left = new_subtree;
     } else {
-        u->parent->right = v;
+        old_subtree->parent->right = new_subtree;
     }
-    v->parent = u->parent;
-} //////
-int rb_delete(RBOrderedSet *st, RBItem key)
+    new_subtree->parent = old_subtree->parent;
+}
+void rb_delete(RBOrderedSet *st, RBItem key)
 {
     if (st == NULL) {
-        return 0;
+        return;
     }
-
     RBNode *target = rb_search(st, key);
     if (target == NULL) {
-        return 0;
+        return;
     }
-
-    RBNode *removed = target;
-
-    if (target->left != st->nil && target->right != st->nil) {
-        removed = rb_get_min(st, target->right);
-        target->key = removed->key;
-    }
-
-    Color removed_color = removed->color;
+    RBNode *replacement = target;
+    Color original_color = replacement->color;
     RBNode *child = NULL;
-    if (removed->left != st->nil) {
-        child = removed->left;
+
+    if (target->left == st->nil) {
+        child = replacement->right;
+        rb_transplant(st, replacement, child);
+    } else if (target->right == st->nil) {
+        child = replacement->left;
+        rb_transplant(st, replacement, child);
     } else {
-        child = removed->right;
+        replacement = rb_get_min(st, target->right);
+        original_color = replacement->color;
+        child = replacement->right;
+
+        if (replacement != target->right) {
+            // Remove replacement from its original position.
+            rb_transplant(st, replacement, child);
+
+            // target's right subtree becomes replacement's right subtree.
+            replacement->right = target->right;
+            replacement->right->parent = replacement;
+        } else {
+            // replacement is already target's right child.
+            child->parent = replacement;
+        }
+        // Move replacement into target's position.
+        rb_transplant(st, target, replacement);
+
+        replacement->left = target->left;
+        replacement->left->parent = replacement;
+
+        replacement->color = target->color;
     }
+    rb_node_destroy(target);
 
-    rb_transplant(st, removed, child);
-
-    if (removed_color == BLACK) {
+    if (original_color == BLACK) {
         rb_delete_fixup(st, child);
     }
-
-    rb_node_destroy(removed);
-
-    return 1;
 }
-static void rb_delete_fixup(RBOrderedSet *st, RBNode *node)
+static void rb_delete_fixup(RBOrderedSet *st, RBNode *current)
 {
-    while (node != st->root && node->color == BLACK) {
-        if (node == node->parent->left) {
-            RBNode *sibling = node->parent->right;
+    while (current != st->root && current->color == BLACK) {
+        if (current == current->parent->left) {
+            RBNode *sibling = current->parent->right;
 
             if (sibling->color == RED) {
                 sibling->color = BLACK;
-                node->parent->color = RED;
-                rb_rotate_left(st, node->parent);
-                sibling = node->parent->right;
+                current->parent->color = RED;
+                rb_rotate_left(st, current->parent);
+                sibling = current->parent->right;
             }
 
             if (sibling->left->color == BLACK &&
                 sibling->right->color == BLACK) {
                 sibling->color = RED;
-                node = node->parent;
+                current = current->parent;
             } else {
                 if (sibling->right->color == BLACK) {
                     sibling->left->color = BLACK;
                     sibling->color = RED;
                     rb_rotate_right(st, sibling);
-                    sibling = node->parent->right;
+                    sibling = current->parent->right;
                 }
 
-                sibling->color = node->parent->color;
-                node->parent->color = BLACK;
+                sibling->color = current->parent->color;
+                current->parent->color = BLACK;
                 sibling->right->color = BLACK;
-                rb_rotate_left(st, node->parent);
-                node = st->root;
+                rb_rotate_left(st, current->parent);
+                current = st->root;
             }
         } else {
-            RBNode *sibling = node->parent->left;
+            RBNode *sibling = current->parent->left;
 
             if (sibling->color == RED) {
                 sibling->color = BLACK;
-                node->parent->color = RED;
-                rb_rotate_right(st, node->parent);
-                sibling = node->parent->left;
+                current->parent->color = RED;
+                rb_rotate_right(st, current->parent);
+                sibling = current->parent->left;
             }
 
             if (sibling->right->color == BLACK &&
                 sibling->left->color == BLACK) {
                 sibling->color = RED;
-                node = node->parent;
+                current = current->parent;
             } else {
                 if (sibling->left->color == BLACK) {
                     sibling->right->color = BLACK;
                     sibling->color = RED;
                     rb_rotate_left(st, sibling);
-                    sibling = node->parent->left;
+                    sibling = current->parent->left;
                 }
 
-                sibling->color = node->parent->color;
-                node->parent->color = BLACK;
+                sibling->color = current->parent->color;
+                current->parent->color = BLACK;
                 sibling->left->color = BLACK;
-                rb_rotate_right(st, node->parent);
-                node = st->root;
+                rb_rotate_right(st, current->parent);
+                current = st->root;
             }
         }
     }
-    node->color = BLACK;
+    current->color = BLACK;
 }
 static RBNode *rb_get_min(RBOrderedSet *st, RBNode *node)
 {

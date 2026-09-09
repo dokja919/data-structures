@@ -45,74 +45,72 @@ void avl_test(void)
     avl_destroy(os);
 }
 
-// void rb_test(void)
-//{
-//     RBOrderedSet *os = rb_create();
-//
-//     if (os == NULL)
-//         return;
-//
-//     while (1) {
-//         int cmd;
-//         int param;
-//         char buffer[10];
-//
-//         printf("Enter command number :\n");
-//         printf("(1) Create a node, (2) Remove a node, (3) Search a Node\n");
-//         printf("(4) Display Tree (5) quit\n");
-//         printf("command number:");
-//
-//         fgets(buffer, sizeof(buffer), stdin);
-//         sscanf(buffer, "%d", &cmd);
-//
-//         if (cmd < 1 || cmd > 5) {
-//             printf("Invalid command number.\n");
-//             continue;
-//         }
-//
-//         if (cmd == 4) {
-//             rb_print(os);
-//             printf("\n");
-//             continue;
-//         }
-//
-//         if (cmd == 5) {
-//             break;
-//         }
-//
-//         printf("Enter parameter (1~200) :\n");
-//
-//         fgets(buffer, sizeof(buffer), stdin);
-//         sscanf(buffer, "%d", &param);
-//
-//         if (param < 1 || param > 200) {
-//             printf("Invalid parameter.%d\n", param);
-//             continue;
-//         }
-//
-//         switch (cmd) {
-//         case 1:
-//             rb_insert(os, param);
-//             break;
-//
-//         case 2:
-//             if (!rb_delete(os, param)) {
-//                 printf("Not found node to delete:%d\n", param);
-//             }
-//             break;
-//
-//         case 3:
-//             if (rb_search(os, param) == NULL) {
-//                 printf("Not found node:%d\n", param);
-//             }
-//             break;
-//         }
-//
-//         printf("\n");
-//     }
-//
-//     rb_destroy(os);
-// }
+void rb_test(void)
+{
+    RBOrderedSet *os = rb_create();
+
+    if (os == NULL)
+        return;
+
+    while (1) {
+        int cmd;
+        int param;
+        char buffer[10];
+
+        printf("Enter command number :\n");
+        printf("(1) Create a node, (2) Remove a node, (3) Search a Node\n");
+        printf("(4) Display Tree (5) quit\n");
+        printf("command number:");
+
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d", &cmd);
+
+        if (cmd < 1 || cmd > 5) {
+            printf("Invalid command number.\n");
+            continue;
+        }
+
+        if (cmd == 4) {
+            rb_print(os);
+            printf("\n");
+            continue;
+        }
+
+        if (cmd == 5) {
+            break;
+        }
+
+        printf("Enter parameter (1~200) :\n");
+
+        fgets(buffer, sizeof(buffer), stdin);
+        sscanf(buffer, "%d", &param);
+
+        if (param < 1 || param > 200) {
+            printf("Invalid parameter.%d\n", param);
+            continue;
+        }
+
+        switch (cmd) {
+        case 1:
+            rb_insert(os, param);
+            break;
+
+        case 2:
+            rb_delete(os, param);
+            break;
+
+        case 3:
+            if (rb_search(os, param) == NULL) {
+                printf("Not found node:%d\n", param);
+            }
+            break;
+        }
+
+        printf("\n");
+    }
+
+    rb_destroy(os);
+}
 
 int main(void)
 {
@@ -127,9 +125,9 @@ int main(void)
         avl_test();
         break;
 
-        // case 2:
-        //     rb_test();
-        //     break;
+    case 2:
+        rb_test();
+        break;
     }
 
     return 0;
