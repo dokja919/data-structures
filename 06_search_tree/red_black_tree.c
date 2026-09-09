@@ -228,15 +228,14 @@ void rb_delete(RBOrderedSet *tree, RBItem key)
     if (target == NULL) {
         return;
     }
+
     RBNode *replacement = target;
     Color original_color = replacement->color;
     RBNode *child = NULL;
 
-    if (target->left == tree->nil) {
-        child = replacement->right;
-        rb_transplant(tree, replacement, child);
-    } else if (target->right == tree->nil) {
-        child = replacement->left;
+    if (target->left == tree->nil || target->right == tree->nil) {
+        child = target->left != tree->nil ? replacement->left : replacement->right;
+
         rb_transplant(tree, replacement, child);
     } else {
         replacement = rb_get_min(tree, target->right);
@@ -244,17 +243,13 @@ void rb_delete(RBOrderedSet *tree, RBItem key)
         child = replacement->right;
 
         if (replacement != target->right) {
-            // Remove replacement from its original position.
             rb_transplant(tree, replacement, child);
 
-            // target's right subtree becomes replacement's right subtree.
             replacement->right = target->right;
             replacement->right->parent = replacement;
         } else {
-            // replacement is already target's right child.
             child->parent = replacement;
         }
-        // Move replacement into target's position.
         rb_transplant(tree, target, replacement);
 
         replacement->left = target->left;
