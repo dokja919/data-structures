@@ -3,11 +3,12 @@
 
 #include <stddef.h>
 
+typedef int DLItem;
 typedef struct DoublyLinkedList DLList;
 
-void dl_insert(DLList *list, size_t pos, int data);
-int dl_delete(DLList *list, size_t pos);
-int dl_get(DLList *list, size_t pos);
+void dl_insert(DLList *list, size_t pos, int value);
+DLItem dl_delete(DLList *list, size_t pos);
+DLItem dl_get(DLList *list, size_t pos);
 size_t dl_size(DLList *list);
 void dl_print(DLList *list);
 

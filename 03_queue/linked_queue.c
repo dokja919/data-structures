@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 typedef struct _l_node {
-    int data;
+    LItem data;
     struct _l_node *next;
 } l_node;
 
@@ -12,17 +12,17 @@ struct LinkedQueue {
     l_node *front;
 };
 
-static l_node *l_node_create(int data);
+static l_node *l_node_create(int value);
 static void l_node_destroy(l_node *node);
 
-static l_node *l_node_create(int data)
+static l_node *l_node_create(int value)
 {
     l_node *new_node = malloc(sizeof(l_node));
     if (new_node == NULL) {
         return NULL;
     }
 
-    new_node->data = data;
+    new_node->data = value;
     new_node->next = NULL;
 
     return new_node;
@@ -52,12 +52,12 @@ void l_destroy(LQueue *queue)
     }
     free(queue);
 }
-void l_enqueue(LQueue *queue, int data)
+void l_enqueue(LQueue *queue, int value)
 {
     if (queue == NULL) {
         return;
     }
-    l_node *new_rear = l_node_create(data);
+    l_node *new_rear = l_node_create(value);
     if (new_rear == NULL) {
         return;
     }
@@ -68,7 +68,7 @@ void l_enqueue(LQueue *queue, int data)
     }
     queue->rear = new_rear;
 }
-int l_dequeue(LQueue *queue)
+LItem l_dequeue(LQueue *queue)
 {
     if (l_is_empty(queue)) {
         return 0;
@@ -79,11 +79,11 @@ int l_dequeue(LQueue *queue)
     if (queue->front == NULL) {
         queue->rear = NULL;
     }
-    int data = target->data;
+    LItem data = target->data;
     l_node_destroy(target);
     return data;
 }
-int l_peek(LQueue *queue)
+LItem l_peek(LQueue *queue)
 {
     if (l_is_empty(queue)) {
         return 0;

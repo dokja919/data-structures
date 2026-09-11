@@ -12,6 +12,6 @@ void b_insert(BPriorityQueue *heap, int priority);
 int b_extract(BPriorityQueue *heap);
 size_t b_size(BPriorityQueue *heap);
 
-void b_heapify(BItem *arr, size_t size, size_t root);
+void b_heapify(BItem *items, size_t size, size_t parent);
 
 #endif

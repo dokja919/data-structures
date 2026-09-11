@@ -1,10 +1,11 @@
 #include "circular_deque.h"
 #include <stdio.h>
 #include <stdlib.h>
+
 #define INITIAL_CAPACITY 8
 
 struct CircularDeque {
-    int *items;
+    CItem *items;
     size_t capacity;
     size_t front;
     size_t size;
@@ -18,7 +19,7 @@ CDeque *c_create(void)
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    deque->items = malloc(sizeof(int) * capacity);
+    deque->items = malloc(sizeof(CItem) * capacity);
     if (deque->items == NULL) {
         free(deque);
         return NULL;
@@ -38,7 +39,7 @@ void c_destroy(CDeque *deque)
     free(deque->items);
     free(deque);
 }
-void c_push_front(CDeque *deque, int data)
+void c_push_front(CDeque *deque, int value)
 {
     if (deque == NULL) {
         return;
@@ -51,10 +52,10 @@ void c_push_front(CDeque *deque, int data)
     }
 
     deque->front = (deque->capacity + deque->front - 1) % deque->capacity;
-    deque->items[deque->front] = data;
+    deque->items[deque->front] = value;
     deque->size++;
 }
-void c_push_back(CDeque *deque, int data)
+void c_push_back(CDeque *deque, int value)
 {
     if (deque == NULL) {
         return;
@@ -66,13 +67,13 @@ void c_push_back(CDeque *deque, int data)
         }
     }
     size_t back = (deque->front + deque->size) % deque->capacity;
-    deque->items[back] = data;
+    deque->items[back] = value;
     deque->size++;
 }
 void c_resize(CDeque *deque)
 {
     size_t new_capacity = deque->capacity * 2;
-    int *new_items = malloc(sizeof(int) * new_capacity);
+    CItem *new_items = malloc(sizeof(int) * new_capacity);
     if (new_items == NULL) {
         return;
     }
@@ -85,34 +86,34 @@ void c_resize(CDeque *deque)
     deque->capacity = new_capacity;
     deque->front = 0;
 }
-int c_pop_front(CDeque *deque)
+CItem c_pop_front(CDeque *deque)
 {
     if (c_is_empty(deque)) {
         return 0;
     }
-    int data = deque->items[deque->front];
+    CItem data = deque->items[deque->front];
     deque->front = (deque->front + 1) % deque->capacity;
     deque->size--;
     return data;
 }
-int c_pop_back(CDeque *deque)
+CItem c_pop_back(CDeque *deque)
 {
     if (c_is_empty(deque)) {
         return 0;
     }
     size_t back = (deque->front + deque->size - 1) % deque->capacity;
-    int data = deque->items[back];
+    CItem data = deque->items[back];
     deque->size--;
     return data;
 }
-int c_front(CDeque *deque)
+CItem c_front(CDeque *deque)
 {
     if (c_is_empty(deque)) {
         return 0;
     }
     return deque->items[deque->front];
 }
-int c_back(CDeque *deque)
+CItem c_back(CDeque *deque)
 {
     if (c_is_empty(deque)) {
         return 0;

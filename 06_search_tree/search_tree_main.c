@@ -6,10 +6,10 @@
 void bs_test(void)
 {
     BSOrderedSet *os = bs_create();
-    int datas[] = {10, 20, 30, 40, 50, 25};
+    int keys[] = {10, 20, 30, 40, 50, 25};
 
     for (int i = 0; i < 6; i++) {
-        bs_insert(os, datas[i]);
+        bs_insert(os, keys[i]);
     }
 
     bs_print(os);

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 typedef struct _cdl_node {
-    int data;
+    CDLItem data;
     struct _cdl_node *next;
     struct _cdl_node *prev;
 } cdl_node;
@@ -13,7 +13,7 @@ struct CircularDoublyLinkedList {
     size_t size;
 };
 
-static cdl_node *cdl_node_create(int data);
+static cdl_node *cdl_node_create(int value);
 static void cdl_node_destroy(cdl_node *node);
 static cdl_node *cdl_node_get(CDLList *list, size_t index);
 
@@ -47,22 +47,6 @@ void cdl_destroy(CDLList *list)
     cdl_node_destroy(list->sentinel);
     free(list);
 }
-static cdl_node *cdl_node_create(int data)
-{
-    cdl_node *new_node = malloc(sizeof(cdl_node));
-    if (new_node == NULL) {
-        return NULL;
-    }
-    new_node->data = data;
-    new_node->prev = NULL;
-    new_node->next = NULL;
-
-    return new_node;
-}
-static void cdl_node_destroy(cdl_node *node)
-{
-    free(node);
-}
 static cdl_node *cdl_node_get(CDLList *list, size_t index)
 {
     if (list == NULL || index > list->size) {
@@ -89,13 +73,13 @@ static cdl_node *cdl_node_get(CDLList *list, size_t index)
     }
     return target;
 }
-void cdl_insert(CDLList *list, size_t index, int data)
+void cdl_insert(CDLList *list, size_t index, int value)
 {
     if (list == NULL || index > list->size) {
         return;
     }
 
-    cdl_node *new_node = cdl_node_create(data);
+    cdl_node *new_node = cdl_node_create(value);
     if (new_node == NULL) {
         return;
     }
@@ -113,7 +97,19 @@ void cdl_insert(CDLList *list, size_t index, int data)
 
     list->size++;
 }
-int cdl_delete(CDLList *list, size_t index)
+static cdl_node *cdl_node_create(int value)
+{
+    cdl_node *new_node = malloc(sizeof(cdl_node));
+    if (new_node == NULL) {
+        return NULL;
+    }
+    new_node->data = value;
+    new_node->prev = NULL;
+    new_node->next = NULL;
+
+    return new_node;
+}
+CDLItem cdl_delete(CDLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;
@@ -127,13 +123,17 @@ int cdl_delete(CDLList *list, size_t index)
 
     prev->next = next;
     next->prev = prev;
-    int data = target->data;
+    CDLItem data = target->data;
     cdl_node_destroy(target);
 
     list->size--;
     return data;
 }
-int cdl_get(CDLList *list, size_t index)
+static void cdl_node_destroy(cdl_node *node)
+{
+    free(node);
+}
+CDLItem cdl_get(CDLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;

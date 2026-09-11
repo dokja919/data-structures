@@ -6,9 +6,9 @@ void a_test(void)
 {
     ABinaryTree *tree = a_create();
 
-    int datas[] = {10, 20, 30, 40, 50, 60, 70};
+    int values[] = {10, 20, 30, 40, 50, 60, 70};
     for (int i = 0; i < 7; i++) {
-        a_insert(tree, datas[i]);
+        a_insert(tree, values[i]);
     }
 
     a_print(tree);

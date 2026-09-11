@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 typedef struct _sl_node {
-    int data;
+    SLItem data;
     struct _sl_node *next;
 } sl_node;
 
@@ -12,7 +12,7 @@ struct SinglyLinkedList {
     size_t size;
 };
 
-static sl_node *sl_node_create(int data);
+static sl_node *sl_node_create(int value);
 static void sl_node_destroy(sl_node *node);
 static sl_node *sl_search(SLList *list, int key);
 
@@ -39,14 +39,14 @@ void sl_destroy(SLList *list)
     }
     free(list);
 }
-static sl_node *sl_node_create(int data)
+static sl_node *sl_node_create(int value)
 {
     sl_node *new_node = malloc(sizeof(sl_node));
     if (new_node == NULL) {
         return NULL;
     }
 
-    new_node->data = data;
+    new_node->data = value;
     new_node->next = NULL;
 
     return new_node;
@@ -55,12 +55,12 @@ static void sl_node_destroy(sl_node *node)
 {
     free(node);
 }
-void sl_insert(SLList *list, size_t index, int data)
+void sl_insert(SLList *list, size_t index, int value)
 {
     if (list == NULL || index > list->size) {
         return;
     }
-    sl_node *new_node = sl_node_create(data);
+    sl_node *new_node = sl_node_create(value);
     if (new_node == NULL) {
         return;
     }
@@ -78,7 +78,7 @@ void sl_insert(SLList *list, size_t index, int data)
 
     list->size++;
 }
-int sl_delete(SLList *list, size_t index)
+SLItem sl_delete(SLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;
@@ -97,12 +97,12 @@ int sl_delete(SLList *list, size_t index)
         target = prev->next;
         prev->next = target->next;
     }
-    int data = target->data;
+    SLItem data = target->data;
     sl_node_destroy(target);
     list->size--;
     return data;
 }
-int sl_get(SLList *list, size_t index)
+SLItem sl_get(SLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;

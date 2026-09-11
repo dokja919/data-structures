@@ -4,11 +4,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+typedef int AItem;
 typedef struct ArrayStack AStack;
 
-void a_push(AStack *stack, int data);
-int a_pop(AStack *stack);
-int a_top(AStack *stack);
+void a_push(AStack *stack, int value);
+AItem a_pop(AStack *stack);
+AItem a_top(AStack *stack);
 bool a_is_empty(AStack *stack);
 size_t a_size(AStack *stack);
 

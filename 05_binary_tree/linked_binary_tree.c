@@ -5,6 +5,7 @@
 typedef struct {
     int value;
 } LItem;
+
 struct LNode {
     LItem data;
     struct LNode *left;

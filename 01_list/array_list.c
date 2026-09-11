@@ -1,39 +1,17 @@
 #include "array_list.h"
 #include <stdio.h>
 #include <stdlib.h>
+
 #define INITIAL_CAPACITY 8
 
+typedef int AItem;
+
 struct ArrayList {
-    int *items;
+    AItem *items;
     size_t capacity;
     size_t size;
 };
 
-static int a_binary_search(AList *list, int key);
-
-static int a_binary_search(AList *list, int key)
-{
-    if (list == NULL) {
-        return -1;
-    }
-    int left = 0;
-    int mid = 0;
-    int right = (int)list->size - 1;
-
-    while (left <= right) {
-        mid = (left + right) / 2;
-
-        if (key == list->items[mid]) {
-            return mid;
-        }
-        if (key < list->items[mid]) {
-            right = mid - 1;
-        } else {
-            left = mid + 1;
-        }
-    }
-    return -1;
-}
 AList *a_create(void)
 {
     AList *list = malloc(sizeof(AList));
@@ -42,7 +20,7 @@ AList *a_create(void)
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    list->items = malloc(sizeof(int) * capacity);
+    list->items = malloc(sizeof(AItem) * capacity);
     if (list->items == NULL) {
         free(list);
         return NULL;
@@ -61,7 +39,7 @@ void a_destroy(AList *list)
     free(list);
 }
 
-void a_insert(AList *list, size_t index, int data)
+void a_insert(AList *list, size_t index, int value)
 {
     if (list == NULL || index > list->size) {
         return;
@@ -69,7 +47,7 @@ void a_insert(AList *list, size_t index, int data)
     if (list->size == list->capacity) {
         size_t new_capacity = list->capacity * 2;
 
-        int *new_items = realloc(list->items, sizeof(int) * new_capacity);
+        AItem *new_items = realloc(list->items, sizeof(AItem) * new_capacity);
         if (new_items == NULL) {
             return; // 메모리 부족
         }
@@ -81,22 +59,22 @@ void a_insert(AList *list, size_t index, int data)
     for (size_t i = list->size; i > index; i--) {
         list->items[i] = list->items[i - 1];
     }
-    list->items[index] = data;
+    list->items[index] = value;
     list->size++;
 }
-int a_delete(AList *list, size_t index)
+AItem a_delete(AList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;
     }
-    int data = list->items[index];
+    AItem data = list->items[index];
     for (size_t i = index; i < list->size - 1; i++) {
         list->items[i] = list->items[i + 1];
     }
     list->size--;
     return data;
 }
-int a_get(AList *list, size_t index)
+AItem a_get(AList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;
@@ -117,3 +95,28 @@ size_t a_size(AList *list)
 {
     return list ? list->size : 0;
 }
+// static int a_binary_search(AList *list, int key);
+//
+// static int a_binary_search(AList *list, int key)
+//{
+//     if (list == NULL) {
+//         return -1;
+//     }
+//     int left = 0;
+//     int mid = 0;
+//     int right = (int)list->size - 1;
+//
+//     while (left <= right) {
+//         mid = (left + right) / 2;
+//
+//         if (key == list->items[mid]) {
+//             return mid;
+//         }
+//         if (key < list->items[mid]) {
+//             right = mid - 1;
+//         } else {
+//             left = mid + 1;
+//         }
+//     }
+//     return -1;
+// }
