@@ -14,12 +14,10 @@ void bubble_sort(int *list, size_t n)
     if (n < 2) {
         return;
     }
-    bool flag = false;
+    for (size_t pass = 0; pass < n - 1; pass++) {
+        bool flag = false;
 
-    for (size_t i = 0; i < n - 1; i++) {
-        flag = false;
-
-        for (size_t j = 0; j < n - 1 - i; j++) {
+        for (size_t j = 0; j < n - 1 - pass; j++) {
             if (list[j] > list[j + 1]) {
                 swap(&list[j], &list[j + 1]);
                 flag = true;
@@ -55,22 +53,28 @@ void selection_sort(int *list, size_t n)
     for (size_t i = 0; i < n - 1; i++) {
         size_t min_index = i;
 
-        for (size_t j = i + 1; j < n; j++)
+        for (size_t j = i + 1; j < n; j++) {
             if (list[j] < list[min_index]) {
                 min_index = j;
             }
-        swap(&list[i], &list[min_index]);
+        }
+        if (min_index != i) {
+            swap(&list[i], &list[min_index]);
+        }
     }
 }
 void merge(int *list, size_t left, size_t mid, size_t right)
 {
-    int *temp = malloc(sizeof(int) * (right - left + 1));
+    int *temp = malloc(sizeof(int) * (right - left));
+    if (temp == NULL) {
+        return;
+    }
 
     size_t i = left;
-    size_t j = mid + 1;
+    size_t j = mid;
     size_t k = 0;
 
-    while (i <= mid && j <= right) {
+    while (i < mid && j < right) {
         if (list[i] <= list[j]) {
             temp[k++] = list[i++];
         } else {
@@ -78,75 +82,49 @@ void merge(int *list, size_t left, size_t mid, size_t right)
         }
     }
 
-    for (; i <= mid; i++) {
-        temp[k++] = list[i];
+    while (i < mid) {
+        temp[k++] = list[i++];
     }
-    for (; j <= right; j++) {
-        temp[k++] = list[j];
+    while (j < right) {
+        temp[k++] = list[j++];
     }
 
-    for (k = 0; k <= right - left; k++) {
-        list[left + k] = temp[k];
+    for (size_t i = 0; i < k; i++) {
+        list[left + i] = temp[i];
     }
     free(temp);
 }
-void merge_sort_recur(int *list, size_t left, size_t right)
+void merge_sort(int *list, size_t left, size_t right)
 {
-    if (left >= right) {
+    if (right - left <= 1) {
         return;
     }
-    size_t mid = (left + right) / 2;
+    size_t mid = left + (right - left) / 2;
 
-    merge_sort_recur(list, left, mid);
-    merge_sort_recur(list, mid + 1, right);
+    merge_sort(list, left, mid);
+    merge_sort(list, mid, right);
     merge(list, left, mid, right);
 }
-void merge_sort(int *list, size_t n)
-{
-    if (n < 2) {
-        return;
-    }
-    merge_sort_recur(list, 0, n - 1);
-}
-void merge_sort_iter(int *list, size_t n)
-{
-    for (size_t width = 1; width < n; width *= 2) {
-        for (size_t left = 0; left < n; left += 2 * width) {
-            size_t mid = left + width - 1;
-            size_t right = left + 2 * width - 1;
-
-            if (mid >= n - 1) {
-                break;
-            }
-
-            if (right >= n) {
-                right = n - 1;
-            }
-            merge(list, left, mid, right);
-        }
-    }
-}
-void merge_sort_iter1(int *list, size_t n)
-{
-    size_t width, left, right, mid, i;
-    for (width = 2; width <= n; width = width * 2) {
-        for (i = 0; i + width - 1 < n; i = i + width) {
-            left = i;
-            right = i + width - 1;
-            mid = (left + right) / 2;
-            merge(list, left, mid, right);
-        }
-        if (n - i > width / 2) {
-            left = i;
-            right = i + width - 1;
-            mid = (left + right) / 2;
-            merge(list, left, mid, n - 1);
-        }
-    }
-    if (width / 2 < n) {
-        merge(list, 0, width / 2 - 1, n - 1);
-    }
-}
+// void merge_sort_iter(int *list, size_t n)
+//{
+//     for (size_t width = 1; width < n; width *= 2) {
+//
+//         for (size_t left = 0; left < n; left += 2 * width) {
+//
+//             size_t mid = left + width;
+//             if (mid >= n) {
+//                 break;
+//             }
+//
+//             size_t right = left + 2 * width;
+//             if (right > n) {
+//                 right = n;
+//             }
+//
+//             merge(list, left, mid, right);
+//         }
+//     }
+// }
 void print(int *list, size_t n)
 {
     for (size_t i = 0; i < n; i++) {
@@ -173,7 +151,7 @@ int main()
         selection_sort(list, n);
         break;
     case 3:
-        merge_sort(list, n);
+        merge_sort(list, 0, n);
         break;
     case 4:
         merge_sort_iter(list, n);
