@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void swap(int *x, int *y)
 {
@@ -8,7 +9,7 @@ void swap(int *x, int *y)
     *x = *y;
     *y = temp;
 }
-void sort_bubble(int *list, size_t n)
+void bubble_sort(int *list, size_t n)
 {
     if (n < 2) {
         return;
@@ -29,7 +30,7 @@ void sort_bubble(int *list, size_t n)
         }
     }
 }
-void sort_insertion(int *list, size_t n)
+void insertion_sort(int *list, size_t n)
 {
     if (n < 2) {
         return;
@@ -46,7 +47,7 @@ void sort_insertion(int *list, size_t n)
         list[j] = key;
     }
 }
-void sort_selection(int *list, size_t n)
+void selection_sort(int *list, size_t n)
 {
     if (n < 2) {
         return;
@@ -61,45 +62,91 @@ void sort_selection(int *list, size_t n)
         swap(&list[i], &list[min_index]);
     }
 }
-void heapify(int *list, size_t n, size_t root)
+void merge(int *list, size_t left, size_t mid, size_t right)
 {
-    while (true) {
-        size_t largest = root;
-        size_t left = root * 2 + 1;
-        size_t right = root * 2 + 2;
+    int *temp = malloc(sizeof(int) * (right - left + 1));
 
-        if (left < n && list[left] > list[largest]) {
-            largest = left;
-        }
-        if (right < n && list[right] > list[largest]) {
-            largest = right;
-        }
+    size_t i = left;
+    size_t j = mid + 1;
+    size_t k = 0;
 
-        if (largest == root) {
-            break;
+    while (i <= mid && j <= right) {
+        if (list[i] <= list[j]) {
+            temp[k++] = list[i++];
+        } else {
+            temp[k++] = list[j++];
         }
-
-        swap(&list[root], &list[largest]);
-        root = largest;
     }
-}
 
-void sort_heap(int *list, size_t n)
+    for (; i <= mid; i++) {
+        temp[k++] = list[i];
+    }
+    for (; j <= right; j++) {
+        temp[k++] = list[j];
+    }
+
+    for (k = 0; k <= right - left; k++) {
+        list[left + k] = temp[k];
+    }
+    free(temp);
+}
+void merge_sort_recur(int *list, size_t left, size_t right)
+{
+    if (left >= right) {
+        return;
+    }
+    size_t mid = (left + right) / 2;
+
+    merge_sort_recur(list, left, mid);
+    merge_sort_recur(list, mid + 1, right);
+    merge(list, left, mid, right);
+}
+void merge_sort(int *list, size_t n)
 {
     if (n < 2) {
         return;
     }
+    merge_sort_recur(list, 0, n - 1);
+}
+void merge_sort_iter(int *list, size_t n)
+{
+    for (size_t width = 1; width < n; width *= 2) {
+        for (size_t left = 0; left < n; left += 2 * width) {
+            size_t mid = left + width - 1;
+            size_t right = left + 2 * width - 1;
 
-    for (size_t i = n / 2; i > 0; i--) {
-        heapify(list, n, i - 1);
-    }
+            if (mid >= n - 1) {
+                break;
+            }
 
-    for (size_t i = n; i > 1; i--) {
-        swap(&list[0], &list[i - 1]);
-        heapify(list, i - 1, 0);
+            if (right >= n) {
+                right = n - 1;
+            }
+            merge(list, left, mid, right);
+        }
     }
 }
-
+void merge_sort_iter1(int *list, size_t n)
+{
+    size_t width, left, right, mid, i;
+    for (width = 2; width <= n; width = width * 2) {
+        for (i = 0; i + width - 1 < n; i = i + width) {
+            left = i;
+            right = i + width - 1;
+            mid = (left + right) / 2;
+            merge(list, left, mid, right);
+        }
+        if (n - i > width / 2) {
+            left = i;
+            right = i + width - 1;
+            mid = (left + right) / 2;
+            merge(list, left, mid, n - 1);
+        }
+    }
+    if (width / 2 < n) {
+        merge(list, 0, width / 2 - 1, n - 1);
+    }
+}
 void print(int *list, size_t n)
 {
     for (size_t i = 0; i < n; i++) {
@@ -117,122 +164,21 @@ int main()
 
     switch (sort_number) {
     case 0:
-        sort_bubble(list, n);
+        bubble_sort(list, n);
         break;
     case 1:
-        sort_insertion(list, n);
+        insertion_sort(list, n);
         break;
     case 2:
-        sort_selection(list, n);
+        selection_sort(list, n);
         break;
     case 3:
-        sort_heap(list, n);
+        merge_sort(list, n);
         break;
+    case 4:
+        merge_sort_iter(list, n);
     }
     print(list, n);
 
     return 0;
 }
-// void Insert(int A[], int n)
-//{
-//     int i = n, temp;
-//     temp = A[i];
-//     while (i > 1 && temp > A[i / 2]) {
-//         A[i] = A[i / 2];
-//         i = i / 2;
-//     }
-//     A[i] = temp;
-// }
-// void HInsert(Heap *ph, HData data)
-//{
-//    int idx = ph->numOfData + 1;
-//
-//    while (idx != 1) {
-//        //	if(pr < (ph->heapArr[GetParentIDX(idx)].pr))
-//        if (ph->comp(data, ph->heapArr[GetParentIDX(idx)]) > 0) {
-//            ph->heapArr[idx] = ph->heapArr[GetParentIDX(idx)];
-//            idx = GetParentIDX(idx);
-//        } else {
-//            break;
-//        }
-//    }
-//
-//    ph->heapArr[idx] = data;
-//    ph->numOfData += 1;
-//}
-//
-// int Delete(int A[], int n)
-//{
-//     int i, j, x, temp, val;
-//     val = A[1];
-//     x = A[n];
-//     A[1] = A[n];
-//     A[n] = val;
-//     i = 1;
-//     j = i * 2;
-//     while (j <= n - 1) {
-//         if (j < n - 1 && A[j + 1] > A[j])
-//             j = j + 1;
-//         if (A[i] < A[j]) {
-//             temp = A[i];
-//             A[i] = A[j];
-//             A[j] = temp;
-//             i = j;
-//             j = 2 * j;
-//         } else
-//             break;
-//     }
-//     return val;
-// }
-// int main()
-//{
-//     int H[] = {0, 14, 15, 5, 20, 30, 8, 40};
-//     int i;
-//     for (i = 2; i <= 7; i++)
-//         Insert(H, i);
-//
-//     for (i = 7; i > 1; i--) {
-//         Delete(H, i);
-//     }
-//     for (i = 1; i <= 7; i++)
-//         printf("%d ", H[i]);
-//     printf("\n");
-//
-//     return 0;
-// }
-// HData HDelete(Heap *ph)
-//{
-//    HData retData = ph->heapArr[1];
-//    HData lastElem = ph->heapArr[ph->numOfData];
-//
-//    int parentIdx = 1;
-//    int childIdx;
-//
-//    while (childIdx = GetHiPriChildIDX(ph, parentIdx)) {
-//        //	if(lastElem.pr <= ph->heapArr[childIdx].pr)
-//        if (ph->comp(lastElem, ph->heapArr[childIdx]) >= 0)
-//            break;
-//
-//        ph->heapArr[parentIdx] = ph->heapArr[childIdx];
-//        parentIdx = childIdx;
-//    }
-//
-//    ph->heapArr[parentIdx] = lastElem;
-//    ph->numOfData -= 1;
-//    return retData;
-//}
-// void HeapSort(int arr[], int n, PriorityComp pc)
-//{
-//    Heap heap;
-//    int i;
-//
-//    HeapInit(&heap, pc);
-//
-//    // 정렬 대상을 가지고 힙을 구성한다.
-//    for (i = 0; i < n; i++)
-//        HInsert(&heap, arr[i]);
-//
-//    // 순서대로 하나씩 꺼내서 정렬을 완성한다.
-//    for (i = 0; i < n; i++)
-//        arr[i] = HDelete(&heap);
-//}
