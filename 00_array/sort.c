@@ -153,8 +153,6 @@ int main()
     case 3:
         merge_sort(list, 0, n);
         break;
-    case 4:
-        merge_sort_iter(list, n);
     }
     print(list, n);
 
