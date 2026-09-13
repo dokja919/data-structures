@@ -92,7 +92,7 @@ int l_get(LNode *node)
 {
     return node == NULL ? 0 : node->data.value;
 }
-void l_preorder(LNode *node)
+void l_preorder(LNode *node) ////////////////// 공간복
 {
     if (node == NULL) {
         return;
@@ -101,7 +101,7 @@ void l_preorder(LNode *node)
     l_preorder(node->left);
     l_preorder(node->right);
 }
-void l_inorder(LNode *node)
+void l_inorder(LNode *node) //////////////
 {
     if (node == NULL) {
         return;
@@ -110,7 +110,7 @@ void l_inorder(LNode *node)
     printf("%d ", node->data.value);
     l_inorder(node->right);
 }
-void l_postorder(LNode *node)
+void l_postorder(LNode *node) /////////////////
 {
     if (node == NULL) {
         return;

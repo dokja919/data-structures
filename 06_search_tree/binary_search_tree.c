@@ -90,17 +90,6 @@ static BSNode *bs_node_insert(BSNode *node, int key)
     }
     return node;
 }
-static void bs_transplant(BSOrderedSet *tree, BSNode *parent,
-                          BSNode *old_subtree, BSNode *new_subtree)
-{
-    if (parent == NULL) {
-        tree->root = new_subtree;
-    } else if (old_subtree == parent->left) {
-        parent->left = new_subtree;
-    } else {
-        parent->right = new_subtree;
-    }
-}
 void bs_delete(BSOrderedSet *tree, int key)
 {
     if (tree == NULL) {
@@ -143,6 +132,17 @@ void bs_delete(BSOrderedSet *tree, int key)
     bs_transplant(tree, target_parent, target, succ);
     succ->left = target->left;
     bs_node_destroy(target);
+}
+static void bs_transplant(BSOrderedSet *tree, BSNode *parent,
+                          BSNode *old_subtree, BSNode *new_subtree)
+{
+    if (parent == NULL) {
+        tree->root = new_subtree;
+    } else if (old_subtree == parent->left) {
+        parent->left = new_subtree;
+    } else {
+        parent->right = new_subtree;
+    }
 }
 static BSNode *bs_get_min(BSNode *node)
 {

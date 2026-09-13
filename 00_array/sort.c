@@ -9,7 +9,7 @@ void swap(int *x, int *y)
     *x = *y;
     *y = temp;
 }
-void bubble_sort(int *list, size_t n)
+void bubble_sort(int array[], size_t n)
 {
     if (n < 2) {
         return;
@@ -18,8 +18,8 @@ void bubble_sort(int *list, size_t n)
         bool flag = false;
 
         for (size_t j = 0; j < n - 1 - pass; j++) {
-            if (list[j] > list[j + 1]) {
-                swap(&list[j], &list[j + 1]);
+            if (array[j] > array[j + 1]) {
+                swap(&array[j], &array[j + 1]);
                 flag = true;
             }
         }
@@ -28,24 +28,7 @@ void bubble_sort(int *list, size_t n)
         }
     }
 }
-void insertion_sort(int *list, size_t n)
-{
-    if (n < 2) {
-        return;
-    }
-    for (size_t i = 1; i < n; i++) {
-        int key = list[i];
-        size_t j = i;
-
-        while (j > 0 && key < list[j - 1]) {
-            list[j] = list[j - 1];
-            j--;
-        }
-
-        list[j] = key;
-    }
-}
-void selection_sort(int *list, size_t n)
+void selection_sort(int array[], size_t n)
 {
     if (n < 2) {
         return;
@@ -54,16 +37,33 @@ void selection_sort(int *list, size_t n)
         size_t min_index = i;
 
         for (size_t j = i + 1; j < n; j++) {
-            if (list[j] < list[min_index]) {
+            if (array[j] < array[min_index]) {
                 min_index = j;
             }
         }
         if (min_index != i) {
-            swap(&list[i], &list[min_index]);
+            swap(&array[i], &array[min_index]);
         }
     }
 }
-void merge(int *list, size_t left, size_t mid, size_t right)
+void insertion_sort(int array[], size_t n)
+{
+    if (n < 2) {
+        return;
+    }
+    for (size_t i = 1; i < n; i++) {
+        int key = array[i];
+        size_t j = i;
+
+        while (j > 0 && key < array[j - 1]) {
+            array[j] = array[j - 1];
+            j--;
+        }
+
+        array[j] = key;
+    }
+}
+void merge(int array[], size_t left, size_t mid, size_t right)
 {
     int *temp = malloc(sizeof(int) * (right - left));
     if (temp == NULL) {
@@ -75,66 +75,142 @@ void merge(int *list, size_t left, size_t mid, size_t right)
     size_t k = 0;
 
     while (i < mid && j < right) {
-        if (list[i] <= list[j]) {
-            temp[k++] = list[i++];
+        if (array[i] <= array[j]) {
+            temp[k++] = array[i++];
         } else {
-            temp[k++] = list[j++];
+            temp[k++] = array[j++];
         }
     }
 
     while (i < mid) {
-        temp[k++] = list[i++];
+        temp[k++] = array[i++];
     }
     while (j < right) {
-        temp[k++] = list[j++];
+        temp[k++] = array[j++];
     }
 
     for (size_t i = 0; i < k; i++) {
-        list[left + i] = temp[i];
+        array[left + i] = temp[i];
     }
     free(temp);
 }
-void merge_sort(int *list, size_t left, size_t right)
+void merge_sort(int array[], size_t left, size_t right)
 {
-    if (right - left <= 1) {
+    if (right - left < 2) {
         return;
     }
-    size_t mid = left + (right - left) / 2;
+    size_t mid = (left + right) / 2;
 
-    merge_sort(list, left, mid);
-    merge_sort(list, mid, right);
-    merge(list, left, mid, right);
+    merge_sort(array, left, mid);
+    merge_sort(array, mid, right);
+    merge(array, left, mid, right);
 }
-// void merge_sort_iter(int *list, size_t n)
-//{
-//     for (size_t width = 1; width < n; width *= 2) {
-//
-//         for (size_t left = 0; left < n; left += 2 * width) {
-//
-//             size_t mid = left + width;
-//             if (mid >= n) {
-//                 break;
-//             }
-//
-//             size_t right = left + 2 * width;
-//             if (right > n) {
-//                 right = n;
-//             }
-//
-//             merge(list, left, mid, right);
-//         }
-//     }
-// }
-void print(int *list, size_t n)
+int partition(int list[], size_t left, size_t right)
+{
+    int pivot = list[left];
+    size_t i = left;
+    size_t j = right;
+
+    do {
+        do {
+            i++;
+        } while (list[i] <= pivot);
+
+        do {
+            j--;
+        } while (list[j] > pivot);
+
+        if (i < j)
+            swap(&list[i], &list[j]);
+
+    } while (i < j);
+
+    swap(&list[left], &list[j]);
+    return j;
+}
+int partition(int arr[], int lo, int hi)
+{
+    int pivot = arr[lo];
+    int i = lo - 1;
+    int j = hi + 1;
+
+    while (1) {
+        do {
+            i++;
+        } while (arr[i] < pivot);
+
+        do {
+            j--;
+        } while (arr[j] > pivot);
+
+        if (i >= j)
+            return j;
+
+        swap(&arr[i], &arr[j]);
+    }
+}
+int partition(int list[], int left, int right)
+{
+    int pivot, temp;
+    int low, high;
+
+    low = left;
+    high = right + 1;
+    pivot = list[left];
+
+    do {
+        do
+            low++;
+        while (list[low] < pivot);
+
+        do
+            high--;
+        while (list[high] > pivot);
+
+        if (low < high)
+            SWAP(list[low], list[high], temp);
+
+    } while (low < high);
+
+    SWAP(list[left], list[high], temp);
+
+    return high;
+}
+void quick_sort(int array[], int left, int right)
+{
+    if (right - left < 1) {
+        return;
+    }
+    size_t pivot = partition(array, left, right);
+    quick_sort(array, left, pivot);
+    quick_sort(array, pivot + 1, right);
+}
+void quick_sort_lomuto(int array[], size_t left, size_t right)
+{
+    if (right - left < 1) {
+        return;
+    }
+
+    size_t pivot = partition(array, left, right);
+
+    if (pivot > left) {
+        quick_sort_lomuto(array, left, pivot - 1);
+    }
+
+    if (pivot < right) {
+        quick_sort_lomuto(array, pivot + 1, right);
+    }
+}
+void print(int *array, size_t n)
 {
     for (size_t i = 0; i < n; i++) {
-        printf("%d ", list[i]);
+        printf("%d ", array[i]);
     }
     printf("\n");
 }
 int main()
 {
-    int list[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
+    int array[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
 
     size_t n = 10;
 
@@ -142,19 +218,19 @@ int main()
 
     switch (sort_number) {
     case 0:
-        bubble_sort(list, n);
+        bubble_sort(array, n);
         break;
     case 1:
-        insertion_sort(list, n);
+        insertion_sort(array, n);
         break;
     case 2:
-        selection_sort(list, n);
+        selection_sort(array, n);
         break;
     case 3:
-        merge_sort(list, 0, n);
+        merge_sort(array, 0, n);
         break;
     }
-    print(list, n);
+    print(array, n);
 
     return 0;
 }
