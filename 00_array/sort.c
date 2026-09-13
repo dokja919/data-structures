@@ -105,78 +105,81 @@ void merge_sort(int array[], size_t left, size_t right)
     merge_sort(array, mid, right);
     merge(array, left, mid, right);
 }
-int partition(int list[], size_t left, size_t right)
+size_t partition(int array[], size_t left, size_t right)
 {
-    int pivot = list[left];
+    size_t pivot = array[left];
+}
+size_t partition0(int array[], size_t left, size_t right)
+{
+    size_t pivot = array[left];
     size_t i = left;
     size_t j = right;
 
     do {
         do {
             i++;
-        } while (list[i] <= pivot);
+        } while (array[i] <= pivot);
 
         do {
             j--;
-        } while (list[j] > pivot);
+        } while (array[j] > pivot);
 
         if (i < j)
-            swap(&list[i], &list[j]);
+            swap(&array[i], &array[j]);
 
     } while (i < j);
 
-    swap(&list[left], &list[j]);
+    swap(&array[left], &array[j]);
     return j;
 }
-int partition(int arr[], int lo, int hi)
+size_t partition1(int array[], size_t left, size_t right)
 {
-    int pivot = arr[lo];
-    int i = lo - 1;
-    int j = hi + 1;
+    size_t pivot = array[left];
+    size_t i = left - 1;
+    size_t j = right + 1;
 
     while (1) {
         do {
             i++;
-        } while (arr[i] < pivot);
+        } while (array[i] < pivot);
 
         do {
             j--;
-        } while (arr[j] > pivot);
+        } while (array[j] > pivot);
 
-        if (i >= j)
+        if (i >= j) {
             return j;
+        }
 
-        swap(&arr[i], &arr[j]);
+        swap(&array[i], &array[j]);
     }
 }
-int partition(int list[], int left, int right)
+size_t partition2(int array[], size_t left, size_t right)
 {
-    int pivot, temp;
-    int low, high;
-
-    low = left;
-    high = right + 1;
-    pivot = list[left];
+    size_t pivot = array[left];
+    size_t i = left;
+    size_t j = right + 1;
 
     do {
-        do
-            low++;
-        while (list[low] < pivot);
+        do {
+            i++;
+        } while (array[i] < pivot);
 
-        do
-            high--;
-        while (list[high] > pivot);
+        do {
+            j--;
+        } while (array[j] > pivot);
 
-        if (low < high)
-            SWAP(list[low], list[high], temp);
+        if (i < j) {
+            swap(&array[i], &array[j]);
+        }
 
-    } while (low < high);
+    } while (i < j);
 
-    SWAP(list[left], list[high], temp);
+    swap(&array[left], &array[j]);
 
-    return high;
+    return j;
 }
-void quick_sort(int array[], int left, int right)
+void quick_sort(int array[], size_t left, size_t right)
 {
     if (right - left < 1) {
         return;
@@ -184,22 +187,6 @@ void quick_sort(int array[], int left, int right)
     size_t pivot = partition(array, left, right);
     quick_sort(array, left, pivot);
     quick_sort(array, pivot + 1, right);
-}
-void quick_sort_lomuto(int array[], size_t left, size_t right)
-{
-    if (right - left < 1) {
-        return;
-    }
-
-    size_t pivot = partition(array, left, right);
-
-    if (pivot > left) {
-        quick_sort_lomuto(array, left, pivot - 1);
-    }
-
-    if (pivot < right) {
-        quick_sort_lomuto(array, pivot + 1, right);
-    }
 }
 void print(int *array, size_t n)
 {
