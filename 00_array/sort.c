@@ -63,18 +63,18 @@ void insertion_sort(int array[], size_t n)
         array[j] = key;
     }
 }
-void merge(int array[], size_t left, size_t mid, size_t right)
+void merge(int array[], size_t begin, size_t mid, size_t end)
 {
-    int *temp = malloc(sizeof(int) * (right - left));
+    int *temp = malloc(sizeof(int) * (end - begin));
     if (temp == NULL) {
         return;
     }
 
-    size_t i = left;
+    size_t i = begin;
     size_t j = mid;
     size_t k = 0;
 
-    while (i < mid && j < right) {
+    while (i < mid && j < end) {
         if (array[i] <= array[j]) {
             temp[k++] = array[i++];
         } else {
@@ -85,108 +85,63 @@ void merge(int array[], size_t left, size_t mid, size_t right)
     while (i < mid) {
         temp[k++] = array[i++];
     }
-    while (j < right) {
+    while (j < end) {
         temp[k++] = array[j++];
     }
 
     for (size_t i = 0; i < k; i++) {
-        array[left + i] = temp[i];
+        array[begin + i] = temp[i];
     }
     free(temp);
 }
-void merge_sort(int array[], size_t left, size_t right)
+void merge_sort(int array[], size_t begin, size_t end)
 {
-    if (right - left < 2) {
+    if (end - begin < 2) {
         return;
     }
-    size_t mid = (left + right) / 2;
+    size_t mid = (begin + end) / 2;
 
-    merge_sort(array, left, mid);
-    merge_sort(array, mid, right);
-    merge(array, left, mid, right);
+    merge_sort(array, begin, mid);
+    merge_sort(array, mid, end);
+    merge(array, begin, mid, end);
 }
-size_t partition(int array[], size_t left, size_t right)
+size_t partition(int array[], size_t begin, size_t end)
 {
-    size_t pivot = array[left];
-}
-size_t partition0(int array[], size_t left, size_t right)
-{
-    size_t pivot = array[left];
-    size_t i = left;
-    size_t j = right;
+    int pivot = array[begin];
 
-    do {
-        do {
+    size_t i = begin + 1;
+    size_t j = end - 1;
+
+    while (i <= j) {
+        while (i < end - 1 && array[i] <= pivot) {
             i++;
-        } while (array[i] <= pivot);
+        }
 
-        do {
+        while (j >= i && array[j] >= pivot) {
             j--;
-        } while (array[j] > pivot);
-
-        if (i < j)
-            swap(&array[i], &array[j]);
-
-    } while (i < j);
-
-    swap(&array[left], &array[j]);
-    return j;
-}
-size_t partition1(int array[], size_t left, size_t right)
-{
-    size_t pivot = array[left];
-    size_t i = left - 1;
-    size_t j = right + 1;
-
-    while (1) {
-        do {
-            i++;
-        } while (array[i] < pivot);
-
-        do {
-            j--;
-        } while (array[j] > pivot);
+        }
 
         if (i >= j) {
-            return j;
+            break;
         }
 
         swap(&array[i], &array[j]);
     }
-}
-size_t partition2(int array[], size_t left, size_t right)
-{
-    size_t pivot = array[left];
-    size_t i = left;
-    size_t j = right + 1;
 
-    do {
-        do {
-            i++;
-        } while (array[i] < pivot);
-
-        do {
-            j--;
-        } while (array[j] > pivot);
-
-        if (i < j) {
-            swap(&array[i], &array[j]);
-        }
-
-    } while (i < j);
-
-    swap(&array[left], &array[j]);
+    if (j != begin) {
+        swap(&array[begin], &array[j]);
+    }
 
     return j;
 }
-void quick_sort(int array[], size_t left, size_t right)
+void quick_sort(int array[], size_t begin, size_t end)
 {
-    if (right - left < 1) {
+    if (end - begin < 2) {
         return;
     }
-    size_t pivot = partition(array, left, right);
-    quick_sort(array, left, pivot);
-    quick_sort(array, pivot + 1, right);
+    size_t pivot = partition(array, begin, end);
+    quick_sort(array, begin, pivot);
+    quick_sort(array, pivot + 1, end);
 }
 void print(int *array, size_t n)
 {
@@ -198,23 +153,26 @@ void print(int *array, size_t n)
 int main()
 {
     int array[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
+    // int array[] = {1, 3};
+    size_t n = sizeof(array) / sizeof(int);
 
-    size_t n = 10;
-
-    size_t sort_number = 2;
+    size_t sort_number = 4;
 
     switch (sort_number) {
     case 0:
         bubble_sort(array, n);
         break;
     case 1:
-        insertion_sort(array, n);
+        selection_sort(array, n);
         break;
     case 2:
-        selection_sort(array, n);
+        insertion_sort(array, n);
         break;
     case 3:
         merge_sort(array, 0, n);
+        break;
+    case 4:
+        quick_sort(array, 0, n);
         break;
     }
     print(array, n);
