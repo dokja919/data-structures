@@ -161,7 +161,6 @@ void heapify(int array[], size_t n, size_t i)
         return;
     }
     swap(&array[i], &array[child]);
-
     heapify(array, n, child);
 }
 void heap_sort(int array[], size_t n)
@@ -172,20 +171,9 @@ void heap_sort(int array[], size_t n)
     for (size_t i = n / 2; i > 0; i--) {
         heapify(array, n, i - 1);
     }
-
     for (size_t i = n; i > 1; i--) {
         swap(&array[0], &array[i - 1]);
         heapify(array, i - 1, 0);
-    }
-}
-void heap_sort1(int array[], size_t n)
-{
-    for (size_t i = n / 2 - 1; i >= 0; i--) {
-        heapify(array, n, i);
-    }
-    for (size_t i = n - 1; i > 0; i--) {
-        swap(&array[0], &array[i]);
-        heapify(array, i, 0);
     }
 }
 void print(int *array, size_t n)
