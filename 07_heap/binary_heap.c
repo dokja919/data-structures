@@ -80,7 +80,6 @@ int b_extract(BPriorityQueue *heap)
 void b_heapify(BItem *items, size_t size, size_t parent)
 {
     size_t left = 2 * parent + 1;
-
     if (left >= size) {
         return;
     }

@@ -143,6 +143,51 @@ void quick_sort(int array[], size_t begin, size_t end)
     quick_sort(array, begin, pivot);
     quick_sort(array, pivot + 1, end);
 }
+
+void heapify(int array[], size_t n, size_t i)
+{
+    size_t left = 2 * i + 1;
+    if (left >= n) {
+        return;
+    }
+    size_t right = left + 1;
+    size_t child = left;
+
+    if (right < n && array[right] > array[left]) {
+        child = right;
+    }
+
+    if (array[i] >= array[child]) {
+        return;
+    }
+    swap(&array[i], &array[child]);
+
+    heapify(array, n, child);
+}
+void heap_sort(int array[], size_t n)
+{
+    if (n < 2) {
+        return;
+    }
+    for (size_t i = n / 2; i > 0; i--) {
+        heapify(array, n, i - 1);
+    }
+
+    for (size_t i = n; i > 1; i--) {
+        swap(&array[0], &array[i - 1]);
+        heapify(array, i - 1, 0);
+    }
+}
+void heap_sort1(int array[], size_t n)
+{
+    for (size_t i = n / 2 - 1; i >= 0; i--) {
+        heapify(array, n, i);
+    }
+    for (size_t i = n - 1; i > 0; i--) {
+        swap(&array[0], &array[i]);
+        heapify(array, i, 0);
+    }
+}
 void print(int *array, size_t n)
 {
     for (size_t i = 0; i < n; i++) {
@@ -173,6 +218,9 @@ int main()
         break;
     case 4:
         quick_sort(array, 0, n);
+        break;
+    case 5:
+        heap_sort(array, n);
         break;
     }
     print(array, n);
