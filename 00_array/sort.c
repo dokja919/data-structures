@@ -195,11 +195,64 @@ void counting_sort(int array[], size_t n)
             max = array[i];
         }
     }
-    size_t *count = calloc((size_t)max + 1, sizeof(int));
+
+    size_t *count = calloc((size_t)max + 2, sizeof(*count));
     if (count == NULL) {
         return;
     }
-    int *output = malloc(n * sizeof(int));
+
+    int *output = malloc(n * sizeof(*output));
+    if (output == NULL) {
+        free(count);
+        return;
+    }
+
+    for (size_t i = 0; i < n; i++) {
+        count[array[i] + 1]++;
+    }
+
+    for (size_t v = 0; v <= max; v++) {
+        count[v + 1] += count[v];
+    }
+
+    for (size_t i = 0; i < n; i++) {
+        int value = array[i];
+
+        output[count[value]] = value;
+        count[value]++;
+    }
+
+    for (size_t i = 0; i < n; i++) {
+        array[i] = output[i];
+    }
+
+    free(count);
+    free(output);
+}
+void counting_sort1(int array[], size_t n)
+{
+    if (array == NULL || n < 2) {
+        return;
+    }
+
+    int max = array[0];
+    if (max < 0) {
+        return;
+    }
+
+    for (size_t i = 1; i < n; i++) {
+        if (array[i] < 0) {
+            return;
+        }
+        if (array[i] > max) {
+            max = array[i];
+        }
+    }
+    size_t *count = calloc((size_t)max + 1, sizeof(*count));
+    if (count == NULL) {
+        return;
+    }
+    int *output = malloc(n * sizeof(*output));
     if (output == NULL) {
         free(count);
         return;
@@ -209,7 +262,7 @@ void counting_sort(int array[], size_t n)
         count[array[i]]++;
     }
 
-    for (int v = 1; v <= max; v++) {
+    for (size_t v = 1; v <= max; v++) {
         count[v] += count[v - 1];
     }
 
@@ -236,7 +289,7 @@ int main()
 {
     int keys[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
     // int array[] = {1, 3};
-    size_t n = sizeof(keys) / sizeof(int);
+    size_t n = sizeof(keys) / sizeof(*keys);
 
     size_t sort_number = 6;
 

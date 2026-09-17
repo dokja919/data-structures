@@ -18,7 +18,7 @@ static void l_node_destroy(l_node *node);
 
 static l_node *l_node_create(int value)
 {
-    l_node *new_node = malloc(sizeof(l_node));
+    l_node *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }
@@ -35,7 +35,7 @@ static void l_node_destroy(l_node *node)
 }
 LDeque *l_create(void)
 {
-    LDeque *deque = malloc(sizeof(LDeque));
+    LDeque *deque = malloc(sizeof(*deque));
     if (deque == NULL) {
         return NULL;
     }

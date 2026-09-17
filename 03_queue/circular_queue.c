@@ -13,13 +13,13 @@ struct CircularQueue {
 
 CQueue *c_create(void)
 {
-    CQueue *queue = malloc(sizeof(CQueue));
+    CQueue *queue = malloc(sizeof(*queue));
     if (queue == NULL) {
         return NULL;
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    queue->items = malloc(sizeof(CItem) * capacity);
+    queue->items = malloc(sizeof(*queue->items) * capacity);
     if (queue->items == NULL) {
         free(queue);
         return NULL;
@@ -46,7 +46,7 @@ void c_enqueue(CQueue *queue, int value)
     }
     if (queue->size == queue->capacity) {
         size_t new_capacity = queue->capacity * 2;
-        CItem *new_items = malloc(sizeof(CItem) * new_capacity);
+        CItem *new_items = malloc(sizeof(*new_items) * new_capacity);
         if (new_items == NULL) {
             return;
         }

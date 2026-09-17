@@ -12,13 +12,13 @@ struct ArrayStack {
 
 AStack *a_create(void)
 {
-    AStack *stack = malloc(sizeof(AStack));
+    AStack *stack = malloc(sizeof(*stack));
     if (stack == NULL) {
         return NULL;
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    stack->items = malloc(sizeof(AItem) * capacity);
+    stack->items = malloc(sizeof(*stack->items) * capacity);
     if (stack->items == NULL) {
         free(stack);
         return NULL;
@@ -45,9 +45,9 @@ void a_push(AStack *stack, int value)
     if (stack->size == stack->capacity) {
         size_t new_capacity = stack->capacity * 2;
 
-        AItem *new_items = realloc(stack->items, sizeof(AItem) * new_capacity);
+        AItem *new_items = realloc(stack->items, sizeof(*new_items) * new_capacity);
         if (new_items == NULL) {
-            return; // 메모리 부족
+            return;
         }
 
         stack->items = new_items;

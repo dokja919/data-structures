@@ -15,13 +15,13 @@ struct ArrayBinaryTree {
 
 ABinaryTree *a_create(void)
 {
-    ABinaryTree *tree = malloc(sizeof(ABinaryTree));
+    ABinaryTree *tree = malloc(sizeof(*tree));
     if (tree == NULL) {
         return NULL;
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    tree->items = malloc(sizeof(AItem) * capacity);
+    tree->items = malloc(sizeof(*tree->items) * capacity);
     if (tree->items == NULL) {
         free(tree);
         return NULL;

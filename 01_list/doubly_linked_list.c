@@ -20,7 +20,7 @@ static dl_node *dl_node_get(DLList *list, size_t pos);
 
 static dl_node *dl_node_create(int value)
 {
-    dl_node *new_node = malloc(sizeof(dl_node));
+    dl_node *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }
@@ -63,7 +63,7 @@ static dl_node *dl_node_get(DLList *list, size_t pos)
 }
 DLList *dl_create(void)
 {
-    DLList *list = malloc(sizeof(DLList));
+    DLList *list = malloc(sizeof(*list));
     if (list == NULL) {
         return NULL;
     }

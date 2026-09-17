@@ -27,7 +27,7 @@ static void bs_inorder(BSNode *node);
 
 BSOrderedSet *bs_create(void)
 {
-    BSOrderedSet *tree = malloc(sizeof(BSOrderedSet));
+    BSOrderedSet *tree = malloc(sizeof(*tree));
     if (tree == NULL) {
         return NULL;
     }
@@ -47,7 +47,7 @@ void bs_destroy(BSOrderedSet *tree)
 }
 static BSNode *bs_node_create(int key)
 {
-    BSNode *new_node = malloc(sizeof(BSNode));
+    BSNode *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }

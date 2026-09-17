@@ -17,7 +17,7 @@ static void cl_node_destroy(cl_node *node);
 
 static cl_node *cl_node_create(int value)
 {
-    cl_node *new_node = malloc(sizeof(cl_node));
+    cl_node *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }
@@ -33,7 +33,7 @@ static void cl_node_destroy(cl_node *node)
 }
 CLList *cl_create(void)
 {
-    CLList *list = malloc(sizeof(CLList));
+    CLList *list = malloc(sizeof(*list));
     if (list == NULL) {
         return NULL;
     }

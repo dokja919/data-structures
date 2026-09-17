@@ -18,7 +18,7 @@ static sl_node *sl_search(SLList *list, int key);
 
 SLList *sl_create(void)
 {
-    SLList *list = malloc(sizeof(SLList));
+    SLList *list = malloc(sizeof(*list));
     if (list == NULL) {
         return NULL;
     }
@@ -41,7 +41,7 @@ void sl_destroy(SLList *list)
 }
 static sl_node *sl_node_create(int value)
 {
-    sl_node *new_node = malloc(sizeof(sl_node));
+    sl_node *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }

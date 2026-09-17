@@ -14,13 +14,13 @@ struct ArrayList {
 
 AList *a_create(void)
 {
-    AList *list = malloc(sizeof(AList));
+    AList *list = malloc(sizeof(*list));
     if (list == NULL) {
         return NULL;
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    list->items = malloc(sizeof(AItem) * capacity);
+    list->items = malloc(sizeof(*list->items) * capacity);
     if (list->items == NULL) {
         free(list);
         return NULL;
@@ -47,9 +47,9 @@ void a_insert(AList *list, size_t index, int value)
     if (list->size == list->capacity) {
         size_t new_capacity = list->capacity * 2;
 
-        AItem *new_items = realloc(list->items, sizeof(AItem) * new_capacity);
+        AItem *new_items = realloc(list->items, sizeof(*new_items) * new_capacity);
         if (new_items == NULL) {
-            return; // 메모리 부족
+            return;
         }
 
         list->items = new_items;

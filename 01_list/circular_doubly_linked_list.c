@@ -19,7 +19,7 @@ static cdl_node *cdl_node_get(CDLList *list, size_t index);
 
 CDLList *cdl_create(void)
 {
-    CDLList *list = malloc(sizeof(CDLList));
+    CDLList *list = malloc(sizeof(*list));
     if (list == NULL) {
         return NULL;
     }
@@ -99,7 +99,7 @@ void cdl_insert(CDLList *list, size_t index, int value)
 }
 static cdl_node *cdl_node_create(int value)
 {
-    cdl_node *new_node = malloc(sizeof(cdl_node));
+    cdl_node *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }

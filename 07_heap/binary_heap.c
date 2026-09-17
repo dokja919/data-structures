@@ -16,7 +16,7 @@ struct BinaryHeap {
 
 BPriorityQueue *b_create(void)
 {
-    BPriorityQueue *heap = malloc(sizeof(BPriorityQueue));
+    BPriorityQueue *heap = malloc(sizeof(*heap));
     if (heap == NULL) {
         return NULL;
     }

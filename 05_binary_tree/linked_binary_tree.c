@@ -26,7 +26,7 @@ void l_subtree_destroy(LNode *node)
 }
 LNode *l_node_create(int value)
 {
-    LNode *new_node = malloc(sizeof(LNode));
+    LNode *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }

@@ -13,13 +13,13 @@ struct CircularDeque {
 
 CDeque *c_create(void)
 {
-    CDeque *deque = malloc(sizeof(CDeque));
+    CDeque *deque = malloc(sizeof(*deque));
     if (deque == NULL) {
         return NULL;
     }
 
     size_t capacity = INITIAL_CAPACITY;
-    deque->items = malloc(sizeof(CItem) * capacity);
+    deque->items = malloc(sizeof(*deque->items) * capacity);
     if (deque->items == NULL) {
         free(deque);
         return NULL;
@@ -73,7 +73,7 @@ void c_push_back(CDeque *deque, int value)
 void c_resize(CDeque *deque)
 {
     size_t new_capacity = deque->capacity * 2;
-    CItem *new_items = malloc(sizeof(int) * new_capacity);
+    CItem *new_items = malloc(sizeof(*new_items) * new_capacity);
     if (new_items == NULL) {
         return;
     }

@@ -32,7 +32,7 @@ static void avl_inorder(AVLNode *node);
 
 AVLOrderedSet *avl_create(void)
 {
-    AVLOrderedSet *tree = malloc(sizeof(AVLOrderedSet));
+    AVLOrderedSet *tree = malloc(sizeof(*tree));
     if (tree == NULL) {
         return NULL;
     }
@@ -50,7 +50,7 @@ void avl_destroy(AVLOrderedSet *tree)
 }
 static AVLNode *avl_node_create(int key)
 {
-    AVLNode *new_node = malloc(sizeof(AVLNode));
+    AVLNode *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
         return NULL;
     }
