@@ -11,7 +11,7 @@ void swap(int *x, int *y)
 }
 void bubble_sort(int array[], size_t n)
 {
-    if (n < 2) {
+    if (array == NULL || n < 2) {
         return;
     }
     for (size_t pass = 0; pass < n - 1; pass++) {
@@ -30,7 +30,7 @@ void bubble_sort(int array[], size_t n)
 }
 void selection_sort(int array[], size_t n)
 {
-    if (n < 2) {
+    if (array == NULL || n < 2) {
         return;
     }
     for (size_t i = 0; i < n - 1; i++) {
@@ -48,7 +48,7 @@ void selection_sort(int array[], size_t n)
 }
 void insertion_sort(int array[], size_t n)
 {
-    if (n < 2) {
+    if (array == NULL || n < 2) {
         return;
     }
     for (size_t i = 1; i < n; i++) {
@@ -96,7 +96,7 @@ void merge(int array[], size_t begin, size_t mid, size_t end)
 }
 void merge_sort(int array[], size_t begin, size_t end)
 {
-    if (end - begin < 2) {
+    if (array == NULL || end - begin < 2) {
         return;
     }
     size_t mid = (begin + end) / 2;
@@ -136,7 +136,7 @@ size_t partition(int array[], size_t begin, size_t end)
 }
 void quick_sort(int array[], size_t begin, size_t end)
 {
-    if (end - begin < 2) {
+    if (array == NULL || end - begin < 2) {
         return;
     }
     size_t pivot = partition(array, begin, end);
@@ -165,7 +165,7 @@ void heapify(int array[], size_t n, size_t i)
 }
 void heap_sort(int array[], size_t n)
 {
-    if (n < 2) {
+    if (array == NULL || n < 2) {
         return;
     }
     for (size_t i = n / 2; i > 0; i--) {
@@ -176,6 +176,55 @@ void heap_sort(int array[], size_t n)
         heapify(array, i - 1, 0);
     }
 }
+void counting_sort(int array[], size_t n)
+{
+    if (array == NULL || n < 2) {
+        return;
+    }
+
+    int max = array[0];
+    if (max < 0) {
+        return;
+    }
+
+    for (size_t i = 1; i < n; i++) {
+        if (array[i] < 0) {
+            return;
+        }
+        if (array[i] > max) {
+            max = array[i];
+        }
+    }
+    size_t *count = calloc((size_t)max + 1, sizeof(int));
+    if (count == NULL) {
+        return;
+    }
+    int *output = malloc(n * sizeof(int));
+    if (output == NULL) {
+        free(count);
+        return;
+    }
+
+    for (size_t i = 0; i < n; i++) {
+        count[array[i]]++;
+    }
+
+    for (int v = 1; v <= max; v++) {
+        count[v] += count[v - 1];
+    }
+
+    for (size_t i = n; i > 0; i--) {
+        int value = array[i - 1];
+        output[count[value] - 1] = value;
+        count[value]--;
+    }
+    for (size_t i = 0; i < n; i++) {
+        array[i] = output[i];
+    }
+
+    free(count);
+    free(output);
+}
 void print(int *array, size_t n)
 {
     for (size_t i = 0; i < n; i++) {
@@ -185,33 +234,35 @@ void print(int *array, size_t n)
 }
 int main()
 {
-    int array[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
+    int keys[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
     // int array[] = {1, 3};
-    size_t n = sizeof(array) / sizeof(int);
+    size_t n = sizeof(keys) / sizeof(int);
 
-    size_t sort_number = 4;
+    size_t sort_number = 6;
 
     switch (sort_number) {
     case 0:
-        bubble_sort(array, n);
+        bubble_sort(keys, n);
         break;
     case 1:
-        selection_sort(array, n);
+        selection_sort(keys, n);
         break;
     case 2:
-        insertion_sort(array, n);
+        insertion_sort(keys, n);
         break;
     case 3:
-        merge_sort(array, 0, n);
+        merge_sort(keys, 0, n);
         break;
     case 4:
-        quick_sort(array, 0, n);
+        quick_sort(keys, 0, n);
         break;
     case 5:
-        heap_sort(array, n);
+        heap_sort(keys, n);
         break;
+    case 6:
+        counting_sort(keys, n);
     }
-    print(array, n);
+    print(keys, n);
 
     return 0;
 }

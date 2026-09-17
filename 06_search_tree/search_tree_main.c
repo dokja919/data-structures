@@ -30,10 +30,10 @@ void bs_test(void)
 void avl_test(void)
 {
     AVLOrderedSet *os = avl_create();
-    int datas[] = {10, 20, 30, 40, 50, 25};
+    int keys[] = {10, 20, 30, 40, 50, 25};
 
     for (int i = 0; i < 6; i++) {
-        avl_insert(os, datas[i]);
+        avl_insert(os, keys[i]);
     }
 
     avl_print(os);
