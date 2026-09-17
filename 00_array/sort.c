@@ -113,11 +113,11 @@ size_t partition(int array[], size_t begin, size_t end)
     size_t j = end - 1;
 
     while (i <= j) {
-        while (i < end - 1 && array[i] <= pivot) {
+        while (i < end - 1 && array[i] < pivot) {
             i++;
         }
 
-        while (j >= i && array[j] >= pivot) {
+        while (j >= i && array[j] > pivot) {
             j--;
         }
 
