@@ -171,18 +171,18 @@ static void rb_insert_fixup(RBOrderedSet *tree, RBNode *new_node)
         if (parent == parent->parent->left) {
             RBNode *uncle = parent->parent->right;
 
-            if (uncle->color == RED) {
+            if (uncle->color == RED) { // case 1
                 parent->color = BLACK;
                 uncle->color = BLACK;
                 parent->parent->color = RED;
                 new_node = parent->parent;
             } else {
-                if (new_node == parent->right) {
+                if (new_node == parent->right) { // case 2
                     new_node = parent;
                     rb_rotate_left(tree, new_node);
                     parent = new_node->parent;
                 }
-                parent->color = BLACK;
+                parent->color = BLACK; // case 3
                 parent->parent->color = RED;
                 rb_rotate_right(tree, parent->parent);
             }
@@ -326,6 +326,85 @@ static void rb_delete_fixup(RBOrderedSet *tree, RBNode *current)
     }
     current->color = BLACK;
 }
+void deleteFixup(RBOrderedSet *tree, RBNode *current)
+{
+    while (current != tree->root && current->color == BLACK) {
+        /* x가 왼쪽 자식 */
+        if (current == current->parent->left) {
+            RBNode *w = current->parent->right;
+
+            if (w->color == RED) { // case 1
+
+                w->color = BLACK;
+                current->parent->color = RED;
+
+                leftRotate(tree, current->parent);
+
+                w = current->parent->right;
+            }
+            if (w->left->color == BLACK && w->right->color == BLACK) { // case 2
+
+                w->color = RED;
+
+                current = current->parent;
+            } else {
+                if (w->right->color == BLACK) { // case 3
+
+                    w->left->color = BLACK;
+                    w->color = RED;
+
+                    rightRotate(tree, w);
+
+                    w = current->parent->right;
+                }
+                w->color = current->parent->color; // case 4
+                current->parent->color = BLACK;
+                w->right->color = BLACK;
+
+                leftRotate(tree, current->parent);
+
+                current = tree->root;
+            }
+        } else {
+            RBNode *w = current->parent->left;
+            if (w->color == RED) {
+
+                w->color = BLACK;
+                current->parent->color = RED;
+
+                rightRotate(tree, current->parent);
+
+                w = current->parent->left;
+            }
+            if (w->right->color == BLACK &&
+                w->left->color == BLACK) {
+
+                w->color = RED;
+
+                current = current->parent;
+            } else {
+                if (w->left->color == BLACK) {
+
+                    w->right->color = BLACK;
+                    w->color = RED;
+
+                    leftRotate(tree, w);
+
+                    w = current->parent->left;
+                }
+                w->color = current->parent->color;
+                current->parent->color = BLACK;
+                w->left->color = BLACK;
+
+                rightRotate(tree, current->parent);
+
+                current = tree->root;
+            }
+        }
+    }
+    current->color = BLACK;
+}
+
 static RBNode *rb_get_min(RBOrderedSet *tree, RBNode *node)
 {
     while (node->left != tree->nil) {

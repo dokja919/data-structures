@@ -143,7 +143,6 @@ void quick_sort(int array[], size_t begin, size_t end)
     quick_sort(array, begin, pivot);
     quick_sort(array, pivot + 1, end);
 }
-
 void heapify(int array[], size_t n, size_t i)
 {
     size_t left = 2 * i + 1;
@@ -225,6 +224,106 @@ void counting_sort(int array[], size_t n)
     free(count);
     free(output);
 }
+
+void radix_sort(int a[], int n)
+{
+    int maxVal = a[0];
+    for (int i = 1; i < n; i++) {
+        if (a[i] > maxVal)
+            maxVal = a[i];
+    }
+    for (int exp = 1; maxVal / exp > 0; exp *= 10) {
+        countingPass(a, n, exp);
+    }
+}
+void radix_sort1(int a[], int n)
+{
+    int maxVal = a[0];
+    for (int i = 1; i < n; i++) {
+        if (a[i] > maxVal)
+            maxVal = a[i];
+    }
+    for (int exp = 1; maxVal / exp > 0; exp *= 10) {
+        countingPass(a, n, exp);
+    }
+}
+void radix_sort2(int arr[], int n)
+{
+    int max = getMax(arr, n);
+
+    for (int exp = 1; max / exp > 0; exp *= 10) {
+        countingSort(arr, n, exp);
+    }
+}
+void radix_sort3(int arr[], int n)
+{
+    int m = getMax(arr, n);
+    for (int exp = 1; m / exp > 0; exp *= 10)
+        countSort(arr, n, exp);
+}
+void radix_sort_standard(int A[], int B[], int n, int d, int r)
+{
+    for (int i = 0; i < d; i++) {
+
+        if (i % 2 == 0) {
+
+            digit_counting_sort(
+                A, B, n, r, i);
+        }
+
+        else {
+
+            digit_counting_sort(
+                B, A, n, r, i);
+        }
+    }
+
+    // 결과가 B에 있으면 A로 복사
+    if (d % 2 == 1) {
+
+        for (int i = 0; i < n; i++) {
+
+            A[i] = B[i];
+        }
+    }
+}
+
+int isPowerOfTwo(int r)
+{
+    return r > 0 && (r & (r - 1)) == 0;
+}
+void radix_sort(int A[], int n, int d, int r)
+{
+    if (n == 0)
+        return;
+
+    int *B = (int *)malloc(
+        n * sizeof(int));
+
+    if (B == NULL) {
+
+        printf("Memory allocation failed.\n");
+
+        exit(EXIT_FAILURE);
+    }
+
+    // radix가 2의 거듭제곱이면
+    // 비트 연산을 이용한 버전 사용
+    if (isPowerOfTwo(r)) {
+
+        radix_sort_power_of_two(
+            A, B, n, d, r);
+    }
+
+    else {
+
+        radix_sort_standard(
+            A, B, n, d, r);
+    }
+
+    free(B);
+}
+
 void print(int *array, size_t n)
 {
     for (size_t i = 0; i < n; i++) {
