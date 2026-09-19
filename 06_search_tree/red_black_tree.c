@@ -268,26 +268,26 @@ static void rb_delete_fixup(RBOrderedSet *tree, RBNode *current)
     while (current != tree->root && current->color == BLACK) {
         if (current == current->parent->left) {
             RBNode *sibling = current->parent->right;
-
+            // case 1
             if (sibling->color == RED) {
                 sibling->color = BLACK;
                 current->parent->color = RED;
                 rb_rotate_left(tree, current->parent);
                 sibling = current->parent->right;
             }
-
-            if (sibling->left->color == BLACK &&
-                sibling->right->color == BLACK) {
+            // case 2
+            if (sibling->left->color == BLACK && sibling->right->color == BLACK) {
                 sibling->color = RED;
                 current = current->parent;
             } else {
+                // case 3
                 if (sibling->right->color == BLACK) {
                     sibling->left->color = BLACK;
                     sibling->color = RED;
                     rb_rotate_right(tree, sibling);
                     sibling = current->parent->right;
                 }
-
+                // case 4
                 sibling->color = current->parent->color;
                 current->parent->color = BLACK;
                 sibling->right->color = BLACK;
@@ -326,85 +326,6 @@ static void rb_delete_fixup(RBOrderedSet *tree, RBNode *current)
     }
     current->color = BLACK;
 }
-void deleteFixup(RBOrderedSet *tree, RBNode *current)
-{
-    while (current != tree->root && current->color == BLACK) {
-        /* x가 왼쪽 자식 */
-        if (current == current->parent->left) {
-            RBNode *w = current->parent->right;
-
-            if (w->color == RED) { // case 1
-
-                w->color = BLACK;
-                current->parent->color = RED;
-
-                leftRotate(tree, current->parent);
-
-                w = current->parent->right;
-            }
-            if (w->left->color == BLACK && w->right->color == BLACK) { // case 2
-
-                w->color = RED;
-
-                current = current->parent;
-            } else {
-                if (w->right->color == BLACK) { // case 3
-
-                    w->left->color = BLACK;
-                    w->color = RED;
-
-                    rightRotate(tree, w);
-
-                    w = current->parent->right;
-                }
-                w->color = current->parent->color; // case 4
-                current->parent->color = BLACK;
-                w->right->color = BLACK;
-
-                leftRotate(tree, current->parent);
-
-                current = tree->root;
-            }
-        } else {
-            RBNode *w = current->parent->left;
-            if (w->color == RED) {
-
-                w->color = BLACK;
-                current->parent->color = RED;
-
-                rightRotate(tree, current->parent);
-
-                w = current->parent->left;
-            }
-            if (w->right->color == BLACK &&
-                w->left->color == BLACK) {
-
-                w->color = RED;
-
-                current = current->parent;
-            } else {
-                if (w->left->color == BLACK) {
-
-                    w->right->color = BLACK;
-                    w->color = RED;
-
-                    leftRotate(tree, w);
-
-                    w = current->parent->left;
-                }
-                w->color = current->parent->color;
-                current->parent->color = BLACK;
-                w->left->color = BLACK;
-
-                rightRotate(tree, current->parent);
-
-                current = tree->root;
-            }
-        }
-    }
-    current->color = BLACK;
-}
-
 static RBNode *rb_get_min(RBOrderedSet *tree, RBNode *node)
 {
     while (node->left != tree->nil) {
