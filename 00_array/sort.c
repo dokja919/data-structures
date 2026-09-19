@@ -174,20 +174,22 @@ void heap_sort(int array[], size_t n)
         heapify(array, end, 0);
     }
 }
-bool get_max_nonnegative(int array[], size_t n, int *max_value)
+bool get_nonnegative_max(int array[], size_t n, int *max_value)
 {
-    if (array == NULL || max_value == NULL || n == 0) {
+    if (array == NULL || n == 0 || max_value == NULL) {
         return false;
     }
 
-    int max = 0;
+    size_t max = 0;
+
     for (size_t i = 0; i < n; i++) {
         if (array[i] < 0) {
             return false;
         }
+        size_t value = (size_t)array[i];
 
-        if (array[i] > max) {
-            max = array[i];
+        if (value > max) {
+            max = value;
         }
     }
 
@@ -200,15 +202,16 @@ void counting_sort(int array[], size_t n)
         return;
     }
 
-    int max_value;
-    if (!get_max_nonnegative(array, n, &max_value)) {
+    size_t max_value;
+    if (!get_nonnegative_max(array, n, &max_value)) {
         return;
     }
 
-    size_t *counts = calloc((size_t)max_value + 1, sizeof(*counts));
+    size_t *counts = calloc(max_value + 1, sizeof(*counts));
     if (counts == NULL) {
         return;
     }
+
     int *output = malloc(n * sizeof(*output));
     if (output == NULL) {
         free(counts);
@@ -216,17 +219,20 @@ void counting_sort(int array[], size_t n)
     }
 
     for (size_t i = 0; i < n; i++) {
-        counts[array[i]]++;
+        size_t value = (size_t)array[i];
+        counts[value]++;
     }
 
-    for (size_t value = 1; value <= (size_t)max_value; value++) {
+    for (size_t value = 1; value <= max_value; value++) {
         counts[value] += counts[value - 1];
     }
 
     for (size_t i = n; i > 0; i--) {
         int value = array[i - 1];
-        output[counts[value] - 1] = value;
-        counts[value]--;
+        size_t index = (size_t)value;
+
+        output[counts[index] - 1] = value;
+        counts[index]--;
     }
     for (size_t i = 0; i < n; i++) {
         array[i] = output[i];
@@ -273,7 +279,7 @@ void radix_sort(int array[], size_t n)
         return;
     }
     int max_value;
-    if (!get_max_nonnegative(array, n, &max_value)) {
+    if (!get_nonnegative_max(array, n, &max_value)) {
         return;
     }
 
