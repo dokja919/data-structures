@@ -180,12 +180,8 @@ bool get_max_nonnegative(int array[], size_t n, int *max_value)
         return false;
     }
 
-    int max = array[0];
-    if (max < 0) {
-        return false;
-    }
-
-    for (size_t i = 1; i < n; i++) {
+    int max = 0;
+    for (size_t i = 0; i < n; i++) {
         if (array[i] < 0) {
             return false;
         }
