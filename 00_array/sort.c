@@ -65,15 +65,16 @@ void insertion_sort(int array[], size_t n)
 }
 void merge(int array[], size_t begin, size_t middle, size_t end)
 {
-    int *buffer = malloc((end - begin) * sizeof(*buffer));
+    size_t n = end - begin;
+    int *buffer = malloc(n * sizeof(*buffer));
     if (buffer == NULL) {
         return;
     }
 
     size_t left = begin;
     size_t right = middle;
-    size_t buffer_index = 0;
 
+    size_t buffer_index = 0;
     while (left < middle && right < end) {
         if (array[left] <= array[right]) {
             buffer[buffer_index++] = array[left++];
@@ -81,7 +82,6 @@ void merge(int array[], size_t begin, size_t middle, size_t end)
             buffer[buffer_index++] = array[right++];
         }
     }
-
     while (left < middle) {
         buffer[buffer_index++] = array[left++];
     }
@@ -89,7 +89,7 @@ void merge(int array[], size_t begin, size_t middle, size_t end)
         buffer[buffer_index++] = array[right++];
     }
 
-    for (size_t i = 0; i < buffer_index; i++) {
+    for (size_t i = 0; i < n; i++) {
         array[begin + i] = buffer[i];
     }
     free(buffer);
@@ -174,26 +174,26 @@ void heap_sort(int array[], size_t n)
         heapify(array, end, 0);
     }
 }
-bool get_nonnegative_max(int array[], size_t n, int *max_value)
+bool get_nonnegative_max(int array[], size_t n, size_t *max_value)
 {
     if (array == NULL || n == 0 || max_value == NULL) {
         return false;
     }
 
-    size_t max = 0;
+    int temp = 0;
 
     for (size_t i = 0; i < n; i++) {
         if (array[i] < 0) {
             return false;
         }
-        size_t value = (size_t)array[i];
+        int value = array[i];
 
-        if (value > max) {
-            max = value;
+        if (value > temp) {
+            temp = value;
         }
     }
 
-    *max_value = max;
+    *max_value = (size_t)temp;
     return true;
 }
 void counting_sort(int array[], size_t n)
@@ -229,10 +229,10 @@ void counting_sort(int array[], size_t n)
 
     for (size_t i = n; i > 0; i--) {
         int value = array[i - 1];
-        size_t index = (size_t)value;
+        size_t counts_index = (size_t)value;
 
-        output[counts[index] - 1] = value;
-        counts[index]--;
+        size_t index = --counts[counts_index];
+        output[index] = value;
     }
     for (size_t i = 0; i < n; i++) {
         array[i] = output[i];
@@ -241,32 +241,31 @@ void counting_sort(int array[], size_t n)
     free(counts);
     free(output);
 }
-void counting_pass(int array[], size_t n, int place_value)
+void counting_pass(int array[], size_t n, size_t place_value)
 {
     size_t counts[10] = {0};
-    int *output = malloc(n * sizeof(*output));
 
+    int *output = malloc(n * sizeof(*output));
     if (output == NULL) {
         return;
     }
 
     for (size_t i = 0; i < n; i++) {
-        int digit = (array[i] / place_value) % 10;
+        size_t digit = ((size_t)array[i] / place_value) % 10;
         counts[digit]++;
     }
 
-    for (size_t digit = 1; digit < 10; digit++) {
+    for (size_t digit = 1; digit <= 9; digit++) {
         counts[digit] += counts[digit - 1];
     }
 
     for (size_t i = n; i > 0; i--) {
         int value = array[i - 1];
-        int digit = (value / place_value) % 10;
+        size_t digit = ((size_t)value / place_value) % 10;
 
-        output[counts[digit] - 1] = value;
-        counts[digit]--;
+        size_t index = --counts[digit];
+        output[index] = value;
     }
-
     for (size_t i = 0; i < n; i++) {
         array[i] = output[i];
     }
@@ -278,12 +277,12 @@ void radix_sort(int array[], size_t n)
     if (array == NULL || n < 2) {
         return;
     }
-    int max_value;
+    size_t max_value;
     if (!get_nonnegative_max(array, n, &max_value)) {
         return;
     }
 
-    for (int place_value = 1; max_value / place_value > 0; place_value *= 10) {
+    for (size_t place_value = 1; max_value / place_value > 0; place_value *= 10) {
         counting_pass(array, n, place_value);
     }
 }
