@@ -111,7 +111,6 @@ size_t partition(int array[], size_t begin, size_t end)
 
     size_t left = begin;
     size_t right = end;
-
     do {
         do {
             left++;
@@ -121,15 +120,14 @@ size_t partition(int array[], size_t begin, size_t end)
             right--;
         } while (right >= left && array[right] > pivot_value);
 
-        if (left < right) {
-            swap(&array[left], &array[right]);
+        if (left >= right) {
+            break;
         }
+        swap(&array[left], &array[right]);
 
     } while (left < right);
 
-    if (right != begin) {
-        swap(&array[begin], &array[right]);
-    }
+    swap(&array[begin], &array[right]);
 
     return right;
 }
@@ -149,6 +147,7 @@ void heapify(int array[], size_t n, size_t root)
     if (left_child >= n) {
         return;
     }
+
     size_t right_child = left_child + 1;
     size_t larger_child = left_child;
 
@@ -170,19 +169,18 @@ void heap_sort(int array[], size_t n)
     for (size_t i = n / 2; i > 0; i--) {
         heapify(array, n, i - 1);
     }
-    for (size_t heap_size = n; heap_size > 1; heap_size--) {
-        swap(&array[0], &array[heap_size - 1]);
-        heapify(array, heap_size - 1, 0);
+    for (size_t end = n - 1; end > 0; end--) {
+        swap(&array[0], &array[end]);
+        heapify(array, end, 0);
     }
 }
-bool get_max_nonnegative(const int array[], size_t n, int *max_value)
+bool get_max_nonnegative(int array[], size_t n, int *max_value)
 {
-    if (array == NULL || n == 0) {
+    if (array == NULL || max_value == NULL || n == 0) {
         return false;
     }
 
     int max = array[0];
-
     if (max < 0) {
         return false;
     }
@@ -297,11 +295,11 @@ void print_array(int *array, size_t n)
 }
 int main()
 {
-    int values[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
-    // int array[] = {1, 3};
+    // int values[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
+    int values[] = {3, 3};
     size_t n = sizeof(values) / sizeof(*values);
 
-    size_t sort_number = 6;
+    size_t sort_number = 4;
 
     switch (sort_number) {
     case 0:
