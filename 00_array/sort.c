@@ -292,6 +292,114 @@ typedef struct Node {
     struct Node *next;
 } Node;
 
+/* 연결 리스트 맨 뒤에 값 추가 */
+void append(Node **head, int value)
+{
+    Node *newNode = malloc(sizeof(Node));
+
+    newNode->data = value;
+    newNode->next = NULL;
+
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+
+    Node *temp = *head;
+
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+
+    temp->next = newNode;
+}
+
+/* 연결 리스트 삽입 정렬 */
+Node *insertion_sort(Node *head)
+{
+    Node *sorted = NULL;
+
+    while (head != NULL) {
+
+        Node *current = head;
+        head = head->next;
+
+        /* sorted가 비었거나 맨 앞에 삽입해야 하는 경우 */
+        if (sorted == NULL || current->data < sorted->data) {
+
+            current->next = sorted;
+            sorted = current;
+        }
+
+        else {
+
+            Node *temp = sorted;
+
+            while (temp->next != NULL &&
+                   temp->next->data <= current->data) {
+
+                temp = temp->next;
+            }
+
+            current->next = temp->next;
+            temp->next = current;
+        }
+    }
+
+    return sorted;
+}
+
+/* Bucket Sort */
+void bucket_sort(int A[], int n)
+{
+    if (n <= 1)
+        return;
+
+    /* 최댓값 찾기 */
+    int max = A[0];
+
+    for (int i = 1; i < n; i++) {
+        if (A[i] > max)
+            max = A[i];
+    }
+
+    /* n개의 버킷 생성 */
+    Node **B = calloc(n, sizeof(Node *));
+
+    /* 각 정수를 버킷에 분배 */
+    for (int i = 0; i < n; i++) {
+
+        int index =
+            (int)(((long long)A[i] * n) / (max + 1));
+
+        append(&B[index], A[i]);
+    }
+
+    /* 각 버킷 정렬 */
+    for (int i = 0; i < n; i++) {
+        B[i] = insertion_sort(B[i]);
+    }
+
+    /* 버킷들을 다시 배열 A에 저장 */
+    int k = 0;
+
+    for (int i = 0; i < n; i++) {
+
+        Node *current = B[i];
+
+        while (current != NULL) {
+
+            A[k++] = current->data;
+
+            Node *temp = current;
+            current = current->next;
+
+            free(temp);
+        }
+    }
+
+    free(B);
+}
 // 버킷에 값 삽입
 void insertBucket(Node **bucket, int value)
 {
