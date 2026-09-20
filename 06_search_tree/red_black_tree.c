@@ -170,19 +170,21 @@ static void rb_insert_fixup(RBOrderedSet *tree, RBNode *new_node)
 
         if (parent == parent->parent->left) {
             RBNode *uncle = parent->parent->right;
-
-            if (uncle->color == RED) { // case 1
+            // case 1
+            if (uncle->color == RED) {
                 parent->color = BLACK;
                 uncle->color = BLACK;
                 parent->parent->color = RED;
                 new_node = parent->parent;
             } else {
-                if (new_node == parent->right) { // case 2
+                // case 2
+                if (new_node == parent->right) {
                     new_node = parent;
                     rb_rotate_left(tree, new_node);
                     parent = new_node->parent;
                 }
-                parent->color = BLACK; // case 3
+                // case 3
+                parent->color = BLACK;
                 parent->parent->color = RED;
                 rb_rotate_right(tree, parent->parent);
             }
@@ -232,7 +234,7 @@ void rb_delete(RBOrderedSet *tree, RBItem key)
     RBNode *replacement = target;
     Color original_color = replacement->color;
     RBNode *child = NULL;
-
+    // case 1
     if (target->left == tree->nil || target->right == tree->nil) {
         child = target->left != tree->nil ? replacement->left : replacement->right;
 
@@ -241,13 +243,13 @@ void rb_delete(RBOrderedSet *tree, RBItem key)
         replacement = rb_get_min(tree, target->right);
         original_color = replacement->color;
         child = replacement->right;
-
+        // case 2
         if (replacement != target->right) {
             rb_transplant(tree, replacement, child);
 
             replacement->right = target->right;
             replacement->right->parent = replacement;
-        } else {
+        } else { // case 3
             child->parent = replacement;
         }
         rb_transplant(tree, target, replacement);
