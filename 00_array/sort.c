@@ -65,8 +65,8 @@ void insertion_sort(int array[], size_t n)
 }
 void merge(int array[], size_t begin, size_t middle, size_t end)
 {
-    size_t n = end - begin;
-    int *buffer = malloc(n * sizeof(*buffer));
+    size_t size = end - begin;
+    int *buffer = malloc(size * sizeof(*buffer));
     if (buffer == NULL) {
         return;
     }
@@ -89,7 +89,7 @@ void merge(int array[], size_t begin, size_t middle, size_t end)
         buffer[buffer_index++] = array[right++];
     }
 
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < size; i++) {
         array[begin + i] = buffer[i];
     }
     free(buffer);
