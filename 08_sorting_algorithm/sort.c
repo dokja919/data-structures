@@ -290,7 +290,7 @@ typedef struct Node {
     int data;
     struct Node *next;
 } Node;
-void append(Node **head, int value)
+void sorted_insert(Node **head, int value)
 {
     Node *new_node = malloc(sizeof(*new_node));
     if (new_node == NULL) {
@@ -299,90 +299,43 @@ void append(Node **head, int value)
     new_node->data = value;
     new_node->next = NULL;
 
-    if (*head == NULL) {
+    Node *current = *head;
+
+    if (current == NULL || value < current->data) {
+        new_node->next = *head;
         *head = new_node;
         return;
     }
-    Node *temp = *head;
-    while (temp->next != NULL) {
-        temp = temp->next;
-    }
-    temp->next = new_node;
-}
-Node *insertion_sort(Node *head)
-{
-    Node *sorted = NULL;
 
-    while (head != NULL) {
-        Node *current = head;
-        head = head->next;
-
-        /* sorted가 비었거나 맨 앞에 삽입해야 하는 경우 */
-        if (sorted == NULL || current->data < sorted->data) {
-
-            current->next = sorted;
-            sorted = current;
-        }
-
-        else {
-
-            Node *temp = sorted;
-
-            while (temp->next != NULL &&
-                   temp->next->data <= current->data) {
-
-                temp = temp->next;
-            }
-
-            current->next = temp->next;
-            temp->next = current;
-        }
+    while (current->next != NULL && value >= current->next->data) {
+        current = current->next;
     }
 
-    return sorted;
+    new_node->next = current->next;
+    current->next = new_node;
 }
 
-/* Bucket Sort */
-void bucket_sort(int A[], int n)
+void bucket_sort(int array[], int n)
 {
-    if (n <= 1)
+    Node **bucket = calloc(n, sizeof(*bucket));
+    if (bucket == NULL) {
         return;
-
-    /* 최댓값 찾기 */
-    int max = A[0];
-
-    for (int i = 1; i < n; i++) {
-        if (A[i] > max)
-            max = A[i];
     }
 
-    /* n개의 버킷 생성 */
-    Node **B = calloc(n, sizeof(Node *));
+    for (size_t i = 0; i < n; i++) {
+        size_t bucket_index = array[i] * n / 100; ////////////////최댓값 100 가정
 
-    /* 각 정수를 버킷에 분배 */
-    for (int i = 0; i < n; i++) {
-
-        int index =
-            (int)(((long long)A[i] * n) / (max + 1));
-
-        append(&B[index], A[i]);
+        sorted_insert(&bucket[bucket_index], array[i]);
     }
 
-    /* 각 버킷 정렬 */
-    for (int i = 0; i < n; i++) {
-        B[i] = insertion_sort(B[i]);
-    }
+    size_t i = 0;
 
-    /* 버킷들을 다시 배열 A에 저장 */
-    int k = 0;
+    for (size_t bucket_index = 0; bucket_index < n; bucket_index++) {
 
-    for (int i = 0; i < n; i++) {
-
-        Node *current = B[i];
+        Node *current = bucket[bucket_index];
 
         while (current != NULL) {
-
-            A[k++] = current->data;
+            array[i++] = current->data;
 
             Node *temp = current;
             current = current->next;
@@ -390,11 +343,9 @@ void bucket_sort(int A[], int n)
             free(temp);
         }
     }
-
-    free(B);
+    free(bucket);
 }
-
-void print_array(int *array, size_t n)
+void print_array(int array[], size_t n)
 {
     for (size_t i = 0; i < n; i++) {
         printf("%d ", array[i]);
@@ -403,11 +354,11 @@ void print_array(int *array, size_t n)
 }
 int main()
 {
-    // int values[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
-    int values[] = {3, 3};
+    int values[] = {11, 13, 7, 12, 16, 9, 24, 5, 10, 3};
+    // int values[] = {3, 3};
     size_t n = sizeof(values) / sizeof(*values);
 
-    size_t sort_number = 4;
+    size_t sort_number = 8;
 
     switch (sort_number) {
     case 0:
@@ -433,6 +384,9 @@ int main()
         break;
     case 7:
         radix_sort(values, n);
+        break;
+    case 8:
+        bucket_sort(values, n);
         break;
     default:
         printf("Invalid sort choice.\n");
