@@ -290,6 +290,7 @@ typedef struct Node {
     int data;
     struct Node *next;
 } Node;
+
 void sorted_insert(Node **head, int value)
 {
     Node *new_node = malloc(sizeof(*new_node));
@@ -315,15 +316,27 @@ void sorted_insert(Node **head, int value)
     current->next = new_node;
 }
 
-void bucket_sort(int array[], int n)
+void bucket_sort(int array[], size_t n)
 {
+    if (array == NULL || n < 2) {
+        return;
+    }
+
+    size_t max_value;
+    if (!get_nonnegative_max(array, n, &max_value)) {
+        return;
+    }
+    if (max_value == 0) {
+        return;
+    }
+
     Node **bucket = calloc(n, sizeof(*bucket));
     if (bucket == NULL) {
         return;
     }
 
     for (size_t i = 0; i < n; i++) {
-        size_t bucket_index = array[i] * n / 100; ////////////////최댓값 100 가정
+        size_t bucket_index = (size_t)array[i] / max_value * (n - 1);
 
         sorted_insert(&bucket[bucket_index], array[i]);
     }
@@ -331,7 +344,6 @@ void bucket_sort(int array[], int n)
     size_t i = 0;
 
     for (size_t bucket_index = 0; bucket_index < n; bucket_index++) {
-
         Node *current = bucket[bucket_index];
 
         while (current != NULL) {
@@ -339,10 +351,10 @@ void bucket_sort(int array[], int n)
 
             Node *temp = current;
             current = current->next;
-
             free(temp);
         }
     }
+
     free(bucket);
 }
 void print_array(int array[], size_t n)
