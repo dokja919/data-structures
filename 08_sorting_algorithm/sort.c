@@ -336,7 +336,7 @@ void bucket_sort(int array[], size_t n)
     }
 
     for (size_t i = 0; i < n; i++) {
-        size_t bucket_index = (size_t)array[i] / max_value * (n - 1);
+        size_t bucket_index = (size_t)array[i] * (n - 1) / max_value;
 
         sorted_insert(&bucket[bucket_index], array[i]);
     }
