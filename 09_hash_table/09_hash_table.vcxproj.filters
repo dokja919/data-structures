@@ -14,4 +14,21 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="separate_chaining_hash_table.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="separate_chaining_hash_table1.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="separate_chaining_hash_table2.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="separate_chaining_hash_table3.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="separate_chaining_hash_table4.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
