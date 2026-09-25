@@ -357,6 +357,7 @@ void bucket_sort(int array[], size_t n)
 
     free(bucket);
 }
+
 void print_array(int array[], size_t n)
 {
     for (size_t i = 0; i < n; i++) {
