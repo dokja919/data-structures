@@ -9,6 +9,7 @@ void swap(int *first, int *second)
     *first = *second;
     *second = temp;
 }
+// Bubble sort
 void bubble_sort(int array[], size_t n)
 {
     if (array == NULL || n < 2) {
@@ -28,6 +29,7 @@ void bubble_sort(int array[], size_t n)
         }
     }
 }
+// Selection sort
 void selection_sort(int array[], size_t n)
 {
     if (array == NULL || n < 2) {
@@ -46,6 +48,7 @@ void selection_sort(int array[], size_t n)
         }
     }
 }
+// Insertion sort
 void insertion_sort(int array[], size_t n)
 {
     if (array == NULL || n < 2) {
@@ -63,6 +66,7 @@ void insertion_sort(int array[], size_t n)
         array[position] = key;
     }
 }
+// Merge sort
 void merge(int array[], size_t begin, size_t middle, size_t end)
 {
     size_t size = end - begin;
@@ -105,6 +109,7 @@ void merge_sort(int array[], size_t begin, size_t end)
     merge_sort(array, middle, end);
     merge(array, begin, middle, end);
 }
+// Quick sort
 size_t partition(int array[], size_t begin, size_t end)
 {
     int pivot_value = array[begin];
@@ -141,6 +146,7 @@ void quick_sort(int array[], size_t begin, size_t end)
     quick_sort(array, begin, pivot_index);
     quick_sort(array, pivot_index + 1, end);
 }
+// Heap sort
 void heapify(int array[], size_t n, size_t root)
 {
     size_t left_child = 2 * root + 1;
@@ -174,6 +180,7 @@ void heap_sort(int array[], size_t n)
         heapify(array, end, 0);
     }
 }
+// Counting sort
 bool get_nonnegative_max(int array[], size_t n, size_t *max_value)
 {
     if (array == NULL || n == 0 || max_value == NULL) {
@@ -208,13 +215,10 @@ void counting_sort(int array[], size_t n)
     }
 
     size_t *counts = calloc(max_value + 1, sizeof(*counts));
-    if (counts == NULL) {
-        return;
-    }
-
     int *output = malloc(n * sizeof(*output));
-    if (output == NULL) {
+    if (counts == NULL || output == NULL) {
         free(counts);
+        free(output);
         return;
     }
 
@@ -241,6 +245,7 @@ void counting_sort(int array[], size_t n)
     free(counts);
     free(output);
 }
+// Radix sort
 void counting_pass(int array[], size_t n, size_t place_value)
 {
     size_t counts[10] = {0};
@@ -286,42 +291,33 @@ void radix_sort(int array[], size_t n)
         counting_pass(array, n, place_value);
     }
 }
-typedef struct Node {
-    int data;
-    struct Node *next;
-} Node;
-
-void sorted_insert(Node **head, int value)
+// Bucket sort
+typedef struct {
+    int *data;
+    size_t size;
+    size_t capacity;
+} Bucket;
+bool bucket_push(Bucket *bucket, int value)
 {
-    Node *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
-        return;
+    if (bucket->size == bucket->capacity) {
+
+        size_t new_capacity = (bucket->capacity == 0) ? 1 : bucket->capacity * 2;
+        int *new_data = realloc(bucket->data, new_capacity * sizeof(*new_data));
+
+        if (new_data == NULL) {
+            return false;
+        }
+        bucket->data = new_data;
+        bucket->capacity = new_capacity;
     }
-    new_node->data = value;
-    new_node->next = NULL;
-
-    Node *current = *head;
-
-    if (current == NULL || value < current->data) {
-        new_node->next = *head;
-        *head = new_node;
-        return;
-    }
-
-    while (current->next != NULL && value >= current->next->data) {
-        current = current->next;
-    }
-
-    new_node->next = current->next;
-    current->next = new_node;
+    bucket->data[bucket->size++] = value;
+    return true;
 }
-
 void bucket_sort(int array[], size_t n)
 {
     if (array == NULL || n < 2) {
         return;
     }
-
     size_t max_value;
     if (!get_nonnegative_max(array, n, &max_value)) {
         return;
@@ -329,35 +325,146 @@ void bucket_sort(int array[], size_t n)
     if (max_value == 0) {
         return;
     }
+    Bucket *buckets = calloc(n, sizeof(*buckets));
+    if (buckets == NULL) {
+        return;
+    }
+    for (size_t i = 0; i < n; i++) {
+        size_t bucket_index = (size_t)array[i] * (n - 1) / max_value;
 
-    Node **bucket = calloc(n, sizeof(*bucket));
-    if (bucket == NULL) {
+        if (bucket_push(&buckets[bucket_index], array[i]) == false) {
+            for (size_t j = 0; j < n; j++) {
+                free(buckets[j].data);
+            }
+
+            free(buckets);
+            return;
+        }
+    }
+    for (size_t i = 0; i < n; i++) {
+        insertion_sort(buckets[i].data, buckets[i].size);
+    }
+
+    size_t index = 0;
+
+    for (size_t i = 0; i < n; i++) {
+
+        for (size_t j = 0; j < buckets[i].size; j++) {
+
+            array[index++] = buckets[i].data[j];
+        }
+        free(buckets[i].data);
+    }
+
+    free(buckets);
+}
+
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+void insertion_sort_node(Node **head)
+{
+    if (head == NULL || *head == NULL) {
+        return;
+    }
+    Node *sorted = NULL;
+
+    while (*head != NULL) {
+
+        Node *current = *head;
+        *head = (*head)->next;
+
+        if (sorted == NULL || current->data < sorted->data) {
+
+            current->next = sorted;
+            sorted = current;
+        }
+
+        else {
+
+            Node *position = sorted;
+
+            while (position->next != NULL &&
+                   position->next->data <= current->data) {
+
+                position = position->next;
+            }
+
+            current->next = position->next;
+            position->next = current;
+        }
+    }
+    *head = sorted;
+}
+
+void bucket_sort_node(int array[], size_t n)
+{
+    if (array == NULL || n < 2) {
+        return;
+    }
+    size_t max_value;
+    if (!get_nonnegative_max(array, n, &max_value)) {
+        return;
+    }
+    if (max_value == 0) {
+        return;
+    }
+    Node **buckets = calloc(n, sizeof(*buckets));
+    if (buckets == NULL) {
         return;
     }
 
     for (size_t i = 0; i < n; i++) {
+
         size_t bucket_index = (size_t)array[i] * (n - 1) / max_value;
 
-        sorted_insert(&bucket[bucket_index], array[i]);
+        Node *new_node = malloc(sizeof(*new_node));
+        if (new_node == NULL) {
+            for (size_t j = 0; j < n; j++) {
+
+                Node *current = buckets[j];
+
+                while (current != NULL) {
+
+                    Node *next = current->next;
+
+                    free(current);
+                    current = next;
+                }
+            }
+
+            free(buckets);
+            return;
+        }
+        new_node->data = array[i];
+        new_node->next = buckets[bucket_index];
+        buckets[bucket_index] = new_node;
     }
 
-    size_t i = 0;
+    for (int i = 0; i < n; i++) {
+        insertion_sort_node(&buckets[i]);
+    }
 
-    for (size_t bucket_index = 0; bucket_index < n; bucket_index++) {
-        Node *current = bucket[bucket_index];
+    size_t index = 0;
+
+    for (size_t i = 0; i < n; i++) {
+
+        Node *current = buckets[i];
 
         while (current != NULL) {
-            array[i++] = current->data;
+
+            array[index++] = current->data;
 
             Node *temp = current;
             current = current->next;
+
             free(temp);
         }
     }
-
-    free(bucket);
+    free(buckets);
 }
-
 void print_array(int array[], size_t n)
 {
     for (size_t i = 0; i < n; i++) {
