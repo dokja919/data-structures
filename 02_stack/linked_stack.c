@@ -11,26 +11,6 @@ struct LinkedStack {
     l_node *top;
 };
 
-static l_node *l_node_create(int value);
-static void l_node_destroy(l_node *node);
-
-static l_node *l_node_create(int value)
-{
-    l_node *new_node = malloc(sizeof(*new_node));
-
-    if (new_node == NULL) {
-        return NULL;
-    }
-
-    new_node->data = value;
-    new_node->next = NULL;
-
-    return new_node;
-}
-static void l_node_destroy(l_node *node)
-{
-    free(node);
-}
 LStack *l_create(void)
 {
     LStack *stack = malloc(sizeof(*stack));
@@ -43,6 +23,10 @@ LStack *l_create(void)
 
     return stack;
 }
+static void l_node_destroy(l_node *node)
+{
+    free(node);
+}
 void l_destroy(LStack *stack)
 {
     if (stack == NULL) {
@@ -54,6 +38,19 @@ void l_destroy(LStack *stack)
     }
 
     free(stack);
+}
+static l_node *l_node_create(int value)
+{
+    l_node *new_node = malloc(sizeof(*new_node));
+
+    if (new_node == NULL) {
+        return NULL;
+    }
+
+    new_node->data = value;
+    new_node->next = NULL;
+
+    return new_node;
 }
 void l_push(LStack *stack, int value)
 {

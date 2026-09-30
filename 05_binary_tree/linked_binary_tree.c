@@ -11,6 +11,7 @@ struct LNode {
     struct LNode *left;
     struct LNode *right;
 };
+
 struct LinkedBinaryTree {
     LNode *root;
 };

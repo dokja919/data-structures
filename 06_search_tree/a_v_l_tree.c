@@ -15,20 +15,6 @@ struct AVLNode {
 struct AVLTree {
     AVLNode *root;
 };
-static AVLNode *avl_node_create(int key);
-static void avl_node_destroy(AVLNode *node);
-static void avl_subtree_destroy(AVLNode *subtree);
-static AVLNode *avl_node_insert(AVLNode *node, int key);
-static AVLNode *avl_node_delete(AVLNode *node, int key);
-static size_t avl_get_height(AVLNode *node);
-static size_t avl_get_bigger(size_t a, size_t b);
-static void avl_update_height(AVLNode *node);
-static AVLNode *avl_rotate_left(AVLNode *x);
-static AVLNode *avl_rotate_right(AVLNode *y);
-static int avl_balancefactor(AVLNode *node);
-static AVLNode *avl_rebalance(AVLNode *node);
-static AVLNode *avl_get_min(AVLNode *node);
-static void avl_inorder(AVLNode *node);
 
 AVLOrderedSet *avl_create(void)
 {
@@ -39,28 +25,6 @@ AVLOrderedSet *avl_create(void)
     tree->root = NULL;
 
     return tree;
-}
-void avl_destroy(AVLOrderedSet *tree)
-{
-    if (tree == NULL) {
-        return;
-    }
-    avl_subtree_destroy(tree->root);
-    free(tree);
-}
-static AVLNode *avl_node_create(int key)
-{
-    AVLNode *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
-        return NULL;
-    }
-
-    new_node->data.key = key;
-    new_node->height = 1;
-    new_node->left = NULL;
-    new_node->right = NULL;
-
-    return new_node;
 }
 static void avl_node_destroy(AVLNode *node)
 {
@@ -74,6 +38,14 @@ static void avl_subtree_destroy(AVLNode *subtree)
     avl_subtree_destroy(subtree->left);
     avl_subtree_destroy(subtree->right);
     avl_node_destroy(subtree);
+}
+void avl_destroy(AVLOrderedSet *tree)
+{
+    if (tree == NULL) {
+        return;
+    }
+    avl_subtree_destroy(tree->root);
+    free(tree);
 }
 static size_t avl_get_height(AVLNode *node)
 {
@@ -144,12 +116,19 @@ static AVLNode *avl_rebalance(AVLNode *node)
     }
     return node;
 }
-void avl_insert(AVLOrderedSet *tree, int key)
+static AVLNode *avl_node_create(int key)
 {
-    if (tree == NULL) {
-        return;
+    AVLNode *new_node = malloc(sizeof(*new_node));
+    if (new_node == NULL) {
+        return NULL;
     }
-    tree->root = avl_node_insert(tree->root, key);
+
+    new_node->data.key = key;
+    new_node->height = 1;
+    new_node->left = NULL;
+    new_node->right = NULL;
+
+    return new_node;
 }
 static AVLNode *avl_node_insert(AVLNode *node, int key)
 {
@@ -165,12 +144,22 @@ static AVLNode *avl_node_insert(AVLNode *node, int key)
     }
     return avl_rebalance(node);
 }
-void avl_delete(AVLOrderedSet *tree, int key)
+void avl_insert(AVLOrderedSet *tree, int key)
 {
     if (tree == NULL) {
         return;
     }
-    tree->root = avl_node_delete(tree->root, key);
+    tree->root = avl_node_insert(tree->root, key);
+}
+static AVLNode *avl_get_min(AVLNode *node)
+{
+    if (node == NULL) {
+        return NULL;
+    }
+    while (node->left != NULL) {
+        node = node->left;
+    }
+    return node;
 }
 static AVLNode *avl_node_delete(AVLNode *node, int key)
 {
@@ -200,15 +189,12 @@ static AVLNode *avl_node_delete(AVLNode *node, int key)
 
     return avl_rebalance(node);
 }
-static AVLNode *avl_get_min(AVLNode *node)
+void avl_delete(AVLOrderedSet *tree, int key)
 {
-    if (node == NULL) {
-        return NULL;
+    if (tree == NULL) {
+        return;
     }
-    while (node->left != NULL) {
-        node = node->left;
-    }
-    return node;
+    tree->root = avl_node_delete(tree->root, key);
 }
 AVLNode *avl_search(AVLOrderedSet *tree, int key)
 {
@@ -234,14 +220,6 @@ int avl_get(AVLNode *node)
     }
     return node->data.key;
 }
-void avl_print(AVLOrderedSet *tree)
-{
-    if (tree == NULL || tree->root == NULL) {
-        return;
-    }
-    avl_inorder(tree->root);
-    printf("\n");
-}
 static void avl_inorder(AVLNode *node)
 {
     if (node == NULL) {
@@ -250,4 +228,12 @@ static void avl_inorder(AVLNode *node)
     avl_inorder(node->left);
     printf("%d ", node->data.key);
     avl_inorder(node->right);
+}
+void avl_print(AVLOrderedSet *tree)
+{
+    if (tree == NULL || tree->root == NULL) {
+        return;
+    }
+    avl_inorder(tree->root);
+    printf("\n");
 }

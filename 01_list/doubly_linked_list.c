@@ -14,26 +14,48 @@ struct DoublyLinkedList {
     size_t size;
 };
 
-static dl_node *dl_node_create(int value);
-static void dl_node_destroy(dl_node *node);
-static dl_node *dl_node_get(DLList *list, size_t pos);
-
-static dl_node *dl_node_create(int value)
+DLList *dl_create(void)
 {
-    dl_node *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
+    DLList *list = malloc(sizeof(*list));
+    if (list == NULL) {
         return NULL;
     }
 
-    new_node->data = value;
-    new_node->prev = NULL;
-    new_node->next = NULL;
+    list->head_sentinel = dl_node_create(0);
+    if (list->head_sentinel == NULL) {
+        free(list);
+        return NULL;
+    }
+    list->tail_sentinel = dl_node_create(0);
+    if (list->tail_sentinel == NULL) {
+        dl_node_destroy(list->head_sentinel);
+        free(list);
+        return NULL;
+    }
 
-    return new_node;
+    list->size = 0;
+    list->head_sentinel->next = list->tail_sentinel;
+    list->tail_sentinel->prev = list->head_sentinel;
+
+    return list;
 }
 static void dl_node_destroy(dl_node *node)
 {
     free(node);
+}
+void dl_destroy(DLList *list)
+{
+    if (list == NULL) {
+        return;
+    }
+
+    while (list->size > 0) {
+        dl_delete(list, 0);
+    }
+
+    dl_node_destroy(list->head_sentinel);
+    dl_node_destroy(list->tail_sentinel);
+    free(list);
 }
 static dl_node *dl_node_get(DLList *list, size_t pos)
 {
@@ -61,44 +83,18 @@ static dl_node *dl_node_get(DLList *list, size_t pos)
 
     return target;
 }
-DLList *dl_create(void)
+static dl_node *dl_node_create(int value)
 {
-    DLList *list = malloc(sizeof(*list));
-    if (list == NULL) {
+    dl_node *new_node = malloc(sizeof(*new_node));
+    if (new_node == NULL) {
         return NULL;
     }
 
-    list->head_sentinel = dl_node_create(0);
-    if (list->head_sentinel == NULL) {
-        free(list);
-        return NULL;
-    }
-    list->tail_sentinel = dl_node_create(0);
-    if (list->tail_sentinel == NULL) {
-        dl_node_destroy(list->head_sentinel);
-        free(list);
-        return NULL;
-    }
+    new_node->data = value;
+    new_node->prev = NULL;
+    new_node->next = NULL;
 
-    list->size = 0;
-    list->head_sentinel->next = list->tail_sentinel;
-    list->tail_sentinel->prev = list->head_sentinel;
-
-    return list;
-}
-void dl_destroy(DLList *list)
-{
-    if (list == NULL) {
-        return;
-    }
-
-    while (list->size > 0) {
-        dl_delete(list, 0);
-    }
-
-    dl_node_destroy(list->head_sentinel);
-    dl_node_destroy(list->tail_sentinel);
-    free(list);
+    return new_node;
 }
 void dl_insert(DLList *list, size_t pos, int value)
 {

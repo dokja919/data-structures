@@ -64,7 +64,7 @@ void rb_test(void)
 
 int main(void)
 {
-    int os_number = 2;
+    int os_number = 1;
 
     switch (os_number) {
     case 0:

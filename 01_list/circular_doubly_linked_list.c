@@ -13,10 +13,6 @@ struct CircularDoublyLinkedList {
     size_t size;
 };
 
-static cdl_node *cdl_node_create(int value);
-static void cdl_node_destroy(cdl_node *node);
-static cdl_node *cdl_node_get(CDLList *list, size_t index);
-
 CDLList *cdl_create(void)
 {
     CDLList *list = malloc(sizeof(*list));
@@ -36,6 +32,10 @@ CDLList *cdl_create(void)
 
     return list;
 }
+static void cdl_node_destroy(cdl_node *node)
+{
+    free(node);
+}
 void cdl_destroy(CDLList *list)
 {
     if (list == NULL) {
@@ -46,6 +46,18 @@ void cdl_destroy(CDLList *list)
     }
     cdl_node_destroy(list->sentinel);
     free(list);
+}
+static cdl_node *cdl_node_create(int value)
+{
+    cdl_node *new_node = malloc(sizeof(*new_node));
+    if (new_node == NULL) {
+        return NULL;
+    }
+    new_node->data = value;
+    new_node->prev = NULL;
+    new_node->next = NULL;
+
+    return new_node;
 }
 static cdl_node *cdl_node_get(CDLList *list, size_t index)
 {
@@ -97,18 +109,6 @@ void cdl_insert(CDLList *list, size_t index, int value)
 
     list->size++;
 }
-static cdl_node *cdl_node_create(int value)
-{
-    cdl_node *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
-        return NULL;
-    }
-    new_node->data = value;
-    new_node->prev = NULL;
-    new_node->next = NULL;
-
-    return new_node;
-}
 CDLItem cdl_delete(CDLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
@@ -128,10 +128,6 @@ CDLItem cdl_delete(CDLList *list, size_t index)
 
     list->size--;
     return data;
-}
-static void cdl_node_destroy(cdl_node *node)
-{
-    free(node);
 }
 CDLItem cdl_get(CDLList *list, size_t index)
 {

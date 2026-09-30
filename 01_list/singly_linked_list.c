@@ -12,10 +12,6 @@ struct SinglyLinkedList {
     size_t size;
 };
 
-static sl_node *sl_node_create(int value);
-static void sl_node_destroy(sl_node *node);
-static sl_node *sl_search(SLList *list, int key);
-
 SLList *sl_create(void)
 {
     SLList *list = malloc(sizeof(*list));
@@ -27,6 +23,10 @@ SLList *sl_create(void)
     list->head = NULL;
 
     return list;
+}
+static void sl_node_destroy(sl_node *node)
+{
+    free(node);
 }
 void sl_destroy(SLList *list)
 {
@@ -50,10 +50,6 @@ static sl_node *sl_node_create(int value)
     new_node->next = NULL;
 
     return new_node;
-}
-static void sl_node_destroy(sl_node *node)
-{
-    free(node);
 }
 void sl_insert(SLList *list, size_t index, int value)
 {
@@ -130,4 +126,7 @@ void sl_print(SLList *list)
 size_t sl_size(SLList *list)
 {
     return list ? list->size : 0;
+}
+static sl_node *sl_search(SLList *list, int key)
+{
 }

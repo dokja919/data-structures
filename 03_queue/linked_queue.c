@@ -12,25 +12,6 @@ struct LinkedQueue {
     l_node *front;
 };
 
-static l_node *l_node_create(int value);
-static void l_node_destroy(l_node *node);
-
-static l_node *l_node_create(int value)
-{
-    l_node *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
-        return NULL;
-    }
-
-    new_node->data = value;
-    new_node->next = NULL;
-
-    return new_node;
-}
-static void l_node_destroy(l_node *node)
-{
-    free(node);
-}
 LQueue *l_create(void)
 {
     LQueue *queue = malloc(sizeof(*queue));
@@ -42,6 +23,10 @@ LQueue *l_create(void)
 
     return queue;
 }
+static void l_node_destroy(l_node *node)
+{
+    free(node);
+}
 void l_destroy(LQueue *queue)
 {
     if (queue == NULL) {
@@ -51,6 +36,18 @@ void l_destroy(LQueue *queue)
         l_dequeue(queue);
     }
     free(queue);
+}
+static l_node *l_node_create(int value)
+{
+    l_node *new_node = malloc(sizeof(*new_node));
+    if (new_node == NULL) {
+        return NULL;
+    }
+
+    new_node->data = value;
+    new_node->next = NULL;
+
+    return new_node;
 }
 void l_enqueue(LQueue *queue, int value)
 {

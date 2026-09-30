@@ -16,15 +16,6 @@ struct BinarySearchTree {
     BSNode *root;
 };
 
-static BSNode *bs_node_create(int key);
-static void bs_node_destroy(BSNode *node);
-static void bs_subtree_destroy(BSNode *subtree);
-static BSNode *bs_node_insert(BSNode *node, int key);
-static void bs_transplant(BSOrderedSet *tree, BSNode *parent,
-                          BSNode *old_subtree, BSNode *new_subtree);
-static BSNode *bs_get_min(BSNode *node);
-static void bs_inorder(BSNode *node);
-
 BSOrderedSet *bs_create(void)
 {
     BSOrderedSet *tree = malloc(sizeof(*tree));
@@ -35,6 +26,19 @@ BSOrderedSet *bs_create(void)
     tree->root = NULL;
 
     return tree;
+}
+static void bs_node_destroy(BSNode *node)
+{
+    free(node);
+}
+static void bs_subtree_destroy(BSNode *subtree)
+{
+    if (subtree == NULL) {
+        return;
+    }
+    bs_subtree_destroy(subtree->left);
+    bs_subtree_destroy(subtree->right);
+    bs_node_destroy(subtree);
 }
 void bs_destroy(BSOrderedSet *tree)
 {
@@ -58,26 +62,6 @@ static BSNode *bs_node_create(int key)
 
     return new_node;
 }
-static void bs_node_destroy(BSNode *node)
-{
-    free(node);
-}
-static void bs_subtree_destroy(BSNode *subtree)
-{
-    if (subtree == NULL) {
-        return;
-    }
-    bs_subtree_destroy(subtree->left);
-    bs_subtree_destroy(subtree->right);
-    bs_node_destroy(subtree);
-}
-void bs_insert(BSOrderedSet *tree, int key)
-{
-    if (tree == NULL) {
-        return;
-    }
-    tree->root = bs_node_insert(tree->root, key);
-}
 static BSNode *bs_node_insert(BSNode *node, int key)
 {
     if (node == NULL) {
@@ -89,6 +73,23 @@ static BSNode *bs_node_insert(BSNode *node, int key)
         node->right = bs_node_insert(node->right, key);
     }
     return node;
+}
+void bs_insert(BSOrderedSet *tree, int key)
+{
+    if (tree == NULL) {
+        return;
+    }
+    tree->root = bs_node_insert(tree->root, key);
+}
+static void bs_transplant(BSOrderedSet *tree, BSNode *parent, BSNode *old_subtree, BSNode *new_subtree)
+{
+    if (parent == NULL) {
+        tree->root = new_subtree;
+    } else if (old_subtree == parent->left) {
+        parent->left = new_subtree;
+    } else {
+        parent->right = new_subtree;
+    }
 }
 void bs_delete(BSOrderedSet *tree, int key)
 {
@@ -133,27 +134,6 @@ void bs_delete(BSOrderedSet *tree, int key)
     succ->left = target->left;
     bs_node_destroy(target);
 }
-static void bs_transplant(BSOrderedSet *tree, BSNode *parent,
-                          BSNode *old_subtree, BSNode *new_subtree)
-{
-    if (parent == NULL) {
-        tree->root = new_subtree;
-    } else if (old_subtree == parent->left) {
-        parent->left = new_subtree;
-    } else {
-        parent->right = new_subtree;
-    }
-}
-static BSNode *bs_get_min(BSNode *node)
-{
-    if (node == NULL) {
-        return NULL;
-    }
-    while (node->left != NULL) {
-        node = node->left;
-    }
-    return node;
-}
 BSNode *bs_search(BSOrderedSet *tree, int key)
 {
     if (tree == NULL) {
@@ -178,14 +158,6 @@ int bs_get(BSNode *node)
     }
     return node->data.key;
 }
-void bs_print(BSOrderedSet *tree)
-{
-    if (tree == NULL || tree->root == NULL) {
-        return;
-    }
-    bs_inorder(tree->root);
-    printf("\n");
-}
 static void bs_inorder(BSNode *node)
 {
     if (node == NULL) {
@@ -194,4 +166,12 @@ static void bs_inorder(BSNode *node)
     bs_inorder(node->left);
     printf("%d ", node->data.key);
     bs_inorder(node->right);
+}
+void bs_print(BSOrderedSet *tree)
+{
+    if (tree == NULL || tree->root == NULL) {
+        return;
+    }
+    bs_inorder(tree->root);
+    printf("\n");
 }
