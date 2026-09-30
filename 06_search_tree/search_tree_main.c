@@ -44,77 +44,27 @@ void avl_test(void)
 
     avl_destroy(os);
 }
-
 void rb_test(void)
 {
     RBOrderedSet *os = rb_create();
+    int keys[] = {10, 20, 30, 40, 50, 25};
 
-    if (os == NULL)
-        return;
-
-    while (1) {
-        int cmd;
-        int param;
-        char buffer[10];
-
-        printf("Enter command number :\n");
-        printf("(1) Create a node, (2) Remove a node, (3) Search a Node\n");
-        printf("(4) Display Tree (5) quit\n");
-        printf("command number:");
-
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &cmd);
-
-        if (cmd < 1 || cmd > 5) {
-            printf("Invalid command number.\n");
-            continue;
-        }
-
-        if (cmd == 4) {
-            rb_print(os);
-            printf("\n");
-            continue;
-        }
-
-        if (cmd == 5) {
-            break;
-        }
-
-        printf("Enter parameter (1~200) :\n");
-
-        fgets(buffer, sizeof(buffer), stdin);
-        sscanf(buffer, "%d", &param);
-
-        if (param < 1 || param > 200) {
-            printf("Invalid parameter.%d\n", param);
-            continue;
-        }
-
-        switch (cmd) {
-        case 1:
-            rb_insert(os, param);
-            break;
-
-        case 2:
-            rb_delete(os, param);
-            break;
-
-        case 3:
-            if (rb_search(os, param) == NULL) {
-                printf("Not found node:%d\n", param);
-            }
-            break;
-        }
-
-        printf("\n");
+    for (int i = 0; i < 6; i++) {
+        rb_insert(os, keys[i]);
     }
+
+    rb_print(os);
+
+    printf("after removing 30\n");
+    rb_delete(os, 30);
+    rb_print(os);
 
     rb_destroy(os);
 }
 
 int main(void)
 {
-    int os_number = 1;
+    int os_number = 2;
 
     switch (os_number) {
     case 0:

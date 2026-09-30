@@ -2,8 +2,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef enum {
+    RED,
+    BLACK
+} Color;
+
+typedef struct {
+    int key;
+} RBItem;
+
 struct RBNode {
-    RBItem key;
+    RBItem data;
     Color color;
     struct RBNode *parent;
     struct RBNode *left;
@@ -14,7 +23,7 @@ struct RedBlackTree {
     RBNode *nil;
 };
 
-static RBNode *rb_node_create(RBItem key);
+static RBNode *rb_node_create(int key);
 static void rb_node_destroy(RBNode *node);
 static void rb_subtree_destroy(RBOrderedSet *tree, RBNode *node);
 static void rb_rotate_left(RBOrderedSet *tree, RBNode *x);
@@ -22,8 +31,8 @@ static void rb_rotate_right(RBOrderedSet *tree, RBNode *y);
 static void rb_insert_fixup(RBOrderedSet *tree, RBNode *new_node);
 static void rb_transplant(RBOrderedSet *tree, RBNode *old_subtree, RBNode *new_subtree);
 static void rb_delete_fixup(RBOrderedSet *tree, RBNode *current);
-static void rb_node_print(RBOrderedSet *tree, RBNode *node, int depth, int black_count);
-static RBNode *rb_node_search(RBOrderedSet *tree, RBNode *node, RBItem key);
+static void rb_node_print(RBOrderedSet *tree, RBNode *node, size_t depth, size_t black_count);
+static RBNode *rb_node_search(RBOrderedSet *tree, RBNode *node, int key);
 static RBNode *rb_get_min(RBOrderedSet *tree, RBNode *node);
 
 RBOrderedSet *rb_create(void)
@@ -47,14 +56,14 @@ RBOrderedSet *rb_create(void)
 
     return tree;
 }
-static RBNode *rb_node_create(RBItem key)
+static RBNode *rb_node_create(int key)
 {
     RBNode *node = malloc(sizeof(RBNode));
     if (node == NULL) {
         return NULL;
     }
 
-    node->key = key;
+    node->data.key = key;
     node->color = RED;
     node->parent = NULL;
     node->left = NULL;
@@ -126,7 +135,7 @@ static void rb_rotate_right(RBOrderedSet *tree, RBNode *y)
     x->right = y;
     y->parent = x;
 }
-void rb_insert(RBOrderedSet *tree, RBItem key)
+void rb_insert(RBOrderedSet *tree, int key)
 {
     if (tree == NULL) {
         return;
@@ -143,12 +152,12 @@ void rb_insert(RBOrderedSet *tree, RBItem key)
 
     while (target != tree->nil) {
         parent = target;
-        if (new_node->key < target->key) {
+        if (new_node->data.key < target->data.key) {
             target = target->left;
-        } else if (new_node->key > target->key) {
+        } else if (new_node->data.key > target->data.key) {
             target = target->right;
         } else {
-            free(new_node);
+            rb_node_destroy(new_node);
             return;
         }
     }
@@ -156,7 +165,7 @@ void rb_insert(RBOrderedSet *tree, RBItem key)
 
     if (parent == tree->nil) {
         tree->root = new_node;
-    } else if (new_node->key < parent->key) {
+    } else if (new_node->data.key < parent->data.key) {
         parent->left = new_node;
     } else {
         parent->right = new_node;
@@ -221,7 +230,7 @@ static void rb_transplant(RBOrderedSet *tree, RBNode *old_subtree, RBNode *new_s
     }
     new_subtree->parent = old_subtree->parent;
 }
-void rb_delete(RBOrderedSet *tree, RBItem key)
+void rb_delete(RBOrderedSet *tree, int key)
 {
     if (tree == NULL) {
         return;
@@ -335,48 +344,59 @@ static RBNode *rb_get_min(RBOrderedSet *tree, RBNode *node)
     }
     return node;
 }
-RBNode *rb_search(RBOrderedSet *tree, RBItem key)
+RBNode *rb_search(RBOrderedSet *tree, int key)
 {
     if (tree == NULL) {
         return NULL;
     }
     return rb_node_search(tree, tree->root, key);
 }
-static RBNode *rb_node_search(RBOrderedSet *tree, RBNode *node, RBItem key)
+static RBNode *rb_node_search(RBOrderedSet *tree, RBNode *node, int key)
 {
-    if (node == tree->nil || node->key == key) {
-        return node == tree->nil ? NULL : node;
+    while (node != tree->nil) {
+        if (key == node->data.key) {
+            return node;
+        }
+
+        if (key < node->data.key) {
+            node = node->left;
+        } else {
+            node = node->right;
+        }
     }
-    if (key < node->key) {
-        return rb_node_search(tree, node->left, key);
+
+    return NULL;
+}
+int rb_get(RBNode *node)
+{
+    if (node == NULL) {
+        return 0;
     }
-    return rb_node_search(tree, node->right, key);
+    return node->data.key;
 }
 void rb_print(RBOrderedSet *tree)
 {
     if (tree == NULL) {
         return;
     }
-
     rb_node_print(tree, tree->root, 0, 0);
 }
-static void rb_node_print(RBOrderedSet *tree, RBNode *node, int depth, int black_count)
+static void rb_node_print(RBOrderedSet *tree, RBNode *node, size_t depth,
+                          size_t black_count)
 {
+    if (node == tree->nil) {
+        return;
+    }
+    if (node->color == BLACK) {
+        black_count++;
+    }
     rb_node_print(tree, node->left, depth + 1, black_count);
 
     int parent_key = -1;
     char position = 'X';
 
-    if (node == tree->nil) {
-        return;
-    }
-
-    if (node->color == BLACK) {
-        black_count++;
-    }
-
     if (node->parent != tree->nil) {
-        parent_key = node->parent->key;
+        parent_key = node->parent->data.key;
 
         if (node == node->parent->left) {
             position = 'L';
@@ -384,17 +404,14 @@ static void rb_node_print(RBOrderedSet *tree, RBNode *node, int depth, int black
             position = 'R';
         }
     }
-
-    for (int i = 0; i < depth; i++) {
+    for (size_t i = 0; i < depth; i++) {
         printf("  ");
     }
-
-    printf("%d %s [%c,%d]", node->key, node->color == RED ? "RED" : "BLACK", position, parent_key);
-
+    printf("%d %s [%c,%d]", node->data.key,
+           node->color == RED ? "RED" : "BLACK", position, parent_key);
     if (node->left == tree->nil && node->right == tree->nil) {
-        printf(" --------- %d", black_count);
+        printf(" --------- %zu", black_count);
     }
-
     printf("\n");
 
     rb_node_print(tree, node->right, depth + 1, black_count);
