@@ -6,8 +6,8 @@
 typedef int DLItem;
 typedef struct DoublyLinkedList DLList;
 
-void dl_insert(DLList *list, size_t pos, int value);
-DLItem dl_delete(DLList *list, size_t pos);
+void dl_insert_at(DLList *list, size_t pos, int value);
+DLItem dl_delete_at(DLList *list, size_t pos);
 DLItem dl_get(DLList *list, size_t pos);
 size_t dl_size(DLList *list);
 void dl_print(DLList *list);

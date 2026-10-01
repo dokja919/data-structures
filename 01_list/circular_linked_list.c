@@ -24,21 +24,6 @@ CLList *cl_create(void)
 
     return list;
 }
-static void cl_node_destroy(cl_node *node)
-{
-    free(node);
-}
-void cl_destroy(CLList *list)
-{
-    if (list == NULL) {
-        return;
-    }
-
-    while (list->tail) {
-        cl_delete(list, 0);
-    }
-    free(list);
-}
 static cl_node *cl_node_create(int value)
 {
     cl_node *new_node = malloc(sizeof(*new_node));
@@ -51,7 +36,7 @@ static cl_node *cl_node_create(int value)
 
     return new_node;
 }
-void cl_insert(CLList *list, size_t index, int value)
+void cl_insert_at(CLList *list, size_t index, int value)
 {
     if (list == NULL || index > list->size) {
         return;
@@ -78,7 +63,11 @@ void cl_insert(CLList *list, size_t index, int value)
     }
     list->size++;
 }
-CLItem cl_delete(CLList *list, size_t index)
+static void cl_node_destroy(cl_node *node)
+{
+    free(node);
+}
+CLItem cl_delete_at(CLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;
@@ -103,6 +92,17 @@ CLItem cl_delete(CLList *list, size_t index)
     cl_node_destroy(target);
     list->size--;
     return data;
+}
+void cl_destroy(CLList *list)
+{
+    if (list == NULL) {
+        return;
+    }
+
+    while (list->tail) {
+        cl_delete_at(list, 0);
+    }
+    free(list);
 }
 CLItem cl_get(CLList *list, size_t index)
 {

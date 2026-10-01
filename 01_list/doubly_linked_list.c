@@ -14,6 +14,19 @@ struct DoublyLinkedList {
     size_t size;
 };
 
+static dl_node *dl_node_create(int value)
+{
+    dl_node *new_node = malloc(sizeof(*new_node));
+    if (new_node == NULL) {
+        return NULL;
+    }
+
+    new_node->data = value;
+    new_node->prev = NULL;
+    new_node->next = NULL;
+
+    return new_node;
+}
 DLList *dl_create(void)
 {
     DLList *list = malloc(sizeof(*list));
@@ -38,24 +51,6 @@ DLList *dl_create(void)
     list->tail_sentinel->prev = list->head_sentinel;
 
     return list;
-}
-static void dl_node_destroy(dl_node *node)
-{
-    free(node);
-}
-void dl_destroy(DLList *list)
-{
-    if (list == NULL) {
-        return;
-    }
-
-    while (list->size > 0) {
-        dl_delete(list, 0);
-    }
-
-    dl_node_destroy(list->head_sentinel);
-    dl_node_destroy(list->tail_sentinel);
-    free(list);
 }
 static dl_node *dl_node_get(DLList *list, size_t pos)
 {
@@ -83,20 +78,7 @@ static dl_node *dl_node_get(DLList *list, size_t pos)
 
     return target;
 }
-static dl_node *dl_node_create(int value)
-{
-    dl_node *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
-        return NULL;
-    }
-
-    new_node->data = value;
-    new_node->prev = NULL;
-    new_node->next = NULL;
-
-    return new_node;
-}
-void dl_insert(DLList *list, size_t pos, int value)
+void dl_insert_at(DLList *list, size_t pos, int value)
 {
     if (list == NULL || pos > list->size) {
         return;
@@ -117,7 +99,11 @@ void dl_insert(DLList *list, size_t pos, int value)
 
     list->size++;
 }
-DLItem dl_delete(DLList *list, size_t pos)
+static void dl_node_destroy(dl_node *node)
+{
+    free(node);
+}
+DLItem dl_delete_at(DLList *list, size_t pos)
 {
     if (list == NULL || pos >= list->size) {
         return 0;
@@ -135,6 +121,20 @@ DLItem dl_delete(DLList *list, size_t pos)
     dl_node_destroy(target);
     list->size--;
     return data;
+}
+void dl_destroy(DLList *list)
+{
+    if (list == NULL) {
+        return;
+    }
+
+    while (list->size > 0) {
+        dl_delete_at(list, 0);
+    }
+
+    dl_node_destroy(list->head_sentinel);
+    dl_node_destroy(list->tail_sentinel);
+    free(list);
 }
 DLItem dl_get(DLList *list, size_t pos)
 {
@@ -161,39 +161,39 @@ size_t dl_size(DLList *list)
 {
     return list ? list->size : 0;
 }
-static dl_node *dl_search(DLList *list, int key)
-{
-    if (list == NULL) {
-        return NULL;
-    }
-    dl_node *target = list->head_sentinel->next;
-
-    while (target != list->tail_sentinel) {
-        if (target->data == key) {
-            return target;
-        }
-        target = target->next;
-    }
-    return NULL;
-}
-// static void dl_node_insert(DLList *list, dl_node *prev, dl_node *node)
+// static dl_node *dl_search(DLList *list, int key)
 //{
-//     if (list == NULL || prev == NULL || node == NULL) {
+//     if (list == NULL) {
+//         return NULL;
+//     }
+//     dl_node *target = list->head_sentinel->next;
+//
+//     while (target != list->tail_sentinel) {
+//         if (target->data == key) {
+//             return target;
+//         }
+//         target = target->next;
+//     }
+//     return NULL;
+// }
+//  static void dl_node_insert(DLList *list, dl_node *prev, dl_node *node)
+//{
+//      if (list == NULL || prev == NULL || node == NULL) {
+//          return;
+//      }
+//      node->next = prev->next;
+//      prev->next->prev = node;
+//      prev->next = node;
+//      node->prev = prev;
+//      list->size++;
+//  }
+//  static void dl_node_delete(DLList *list, dl_node *node)
+//{
+//     if (list == NULL || node == NULL) {
 //         return;
 //     }
-//     node->next = prev->next;
-//     prev->next->prev = node;
-//     prev->next = node;
-//     node->prev = prev;
-//     list->size++;
+//     node->prev->next = node->next;
+//     node->next->prev = node->prev;
+//     dl_node_destroy(node);
+//     list->size--;
 // }
-// static void dl_node_delete(DLList *list, dl_node *node)
-//{
-//    if (list == NULL || node == NULL) {
-//        return;
-//    }
-//    node->prev->next = node->next;
-//    node->next->prev = node->prev;
-//    dl_node_destroy(node);
-//    list->size--;
-//}

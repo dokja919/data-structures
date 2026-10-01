@@ -24,21 +24,6 @@ SLList *sl_create(void)
 
     return list;
 }
-static void sl_node_destroy(sl_node *node)
-{
-    free(node);
-}
-void sl_destroy(SLList *list)
-{
-    if (list == NULL) {
-        return;
-    }
-
-    while (list->head) {
-        sl_delete(list, 0);
-    }
-    free(list);
-}
 static sl_node *sl_node_create(int value)
 {
     sl_node *new_node = malloc(sizeof(*new_node));
@@ -51,7 +36,7 @@ static sl_node *sl_node_create(int value)
 
     return new_node;
 }
-void sl_insert(SLList *list, size_t index, int value)
+void sl_insert_at(SLList *list, size_t index, int value)
 {
     if (list == NULL || index > list->size) {
         return;
@@ -74,7 +59,11 @@ void sl_insert(SLList *list, size_t index, int value)
 
     list->size++;
 }
-SLItem sl_delete(SLList *list, size_t index)
+static void sl_node_destroy(sl_node *node)
+{
+    free(node);
+}
+SLItem sl_delete_at(SLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;
@@ -97,6 +86,17 @@ SLItem sl_delete(SLList *list, size_t index)
     sl_node_destroy(target);
     list->size--;
     return data;
+}
+void sl_destroy(SLList *list)
+{
+    if (list == NULL) {
+        return;
+    }
+
+    while (list->head) {
+        sl_delete_at(list, 0);
+    }
+    free(list);
 }
 SLItem sl_get(SLList *list, size_t index)
 {
@@ -126,7 +126,4 @@ void sl_print(SLList *list)
 size_t sl_size(SLList *list)
 {
     return list ? list->size : 0;
-}
-static sl_node *sl_search(SLList *list, int key)
-{
 }

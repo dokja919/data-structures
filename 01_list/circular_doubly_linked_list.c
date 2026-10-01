@@ -13,6 +13,18 @@ struct CircularDoublyLinkedList {
     size_t size;
 };
 
+static cdl_node *cdl_node_create(int value)
+{
+    cdl_node *new_node = malloc(sizeof(*new_node));
+    if (new_node == NULL) {
+        return NULL;
+    }
+    new_node->data = value;
+    new_node->prev = NULL;
+    new_node->next = NULL;
+
+    return new_node;
+}
 CDLList *cdl_create(void)
 {
     CDLList *list = malloc(sizeof(*list));
@@ -31,33 +43,6 @@ CDLList *cdl_create(void)
     list->size = 0;
 
     return list;
-}
-static void cdl_node_destroy(cdl_node *node)
-{
-    free(node);
-}
-void cdl_destroy(CDLList *list)
-{
-    if (list == NULL) {
-        return;
-    }
-    while (list->size > 0) {
-        cdl_delete(list, 0);
-    }
-    cdl_node_destroy(list->sentinel);
-    free(list);
-}
-static cdl_node *cdl_node_create(int value)
-{
-    cdl_node *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
-        return NULL;
-    }
-    new_node->data = value;
-    new_node->prev = NULL;
-    new_node->next = NULL;
-
-    return new_node;
 }
 static cdl_node *cdl_node_get(CDLList *list, size_t index)
 {
@@ -85,7 +70,7 @@ static cdl_node *cdl_node_get(CDLList *list, size_t index)
     }
     return target;
 }
-void cdl_insert(CDLList *list, size_t index, int value)
+void cdl_insert_at(CDLList *list, size_t index, int value)
 {
     if (list == NULL || index > list->size) {
         return;
@@ -109,7 +94,11 @@ void cdl_insert(CDLList *list, size_t index, int value)
 
     list->size++;
 }
-CDLItem cdl_delete(CDLList *list, size_t index)
+static void cdl_node_destroy(cdl_node *node)
+{
+    free(node);
+}
+CDLItem cdl_delete_at(CDLList *list, size_t index)
 {
     if (list == NULL || index >= list->size) {
         return 0;
@@ -128,6 +117,17 @@ CDLItem cdl_delete(CDLList *list, size_t index)
 
     list->size--;
     return data;
+}
+void cdl_destroy(CDLList *list)
+{
+    if (list == NULL) {
+        return;
+    }
+    while (list->size > 0) {
+        cdl_delete_at(list, 0);
+    }
+    cdl_node_destroy(list->sentinel);
+    free(list);
 }
 CDLItem cdl_get(CDLList *list, size_t index)
 {
