@@ -47,22 +47,32 @@ void avl_destroy(AVLOrderedSet *tree)
     avl_subtree_destroy(tree->root);
     free(tree);
 }
+static AVLNode *avl_node_create(int key)
+{
+    AVLNode *new_node = malloc(sizeof(*new_node));
+    if (new_node == NULL) {
+        return NULL;
+    }
+
+    new_node->data.key = key;
+    new_node->height = 1;
+    new_node->left = NULL;
+    new_node->right = NULL;
+
+    return new_node;
+}
 static size_t avl_get_height(AVLNode *node)
 {
     return node ? node->height : 0;
-}
-static size_t avl_get_bigger(size_t a, size_t b)
-{
-    return a > b ? a : b;
 }
 static void avl_update_height(AVLNode *node)
 {
     if (node == NULL) {
         return;
     }
-    size_t left_height = avl_get_height(node->left);
-    size_t right_height = avl_get_height(node->right);
-    node->height = 1 + avl_get_bigger(left_height, right_height);
+    size_t left = avl_get_height(node->left);
+    size_t right = avl_get_height(node->right);
+    node->height = 1 + (left > right ? left : right);
 }
 static AVLNode *avl_rotate_left(AVLNode *x)
 {
@@ -90,7 +100,9 @@ static AVLNode *avl_rotate_right(AVLNode *y)
 }
 static int avl_balancefactor(AVLNode *node)
 {
-    return (int)avl_get_height(node->left) - (int)avl_get_height(node->right);
+    int left = (int)avl_get_height(node->left);
+    int right = (int)avl_get_height(node->right);
+    return left - right;
 }
 static AVLNode *avl_rebalance(AVLNode *node)
 {
@@ -115,20 +127,6 @@ static AVLNode *avl_rebalance(AVLNode *node)
         return avl_rotate_left(node);
     }
     return node;
-}
-static AVLNode *avl_node_create(int key)
-{
-    AVLNode *new_node = malloc(sizeof(*new_node));
-    if (new_node == NULL) {
-        return NULL;
-    }
-
-    new_node->data.key = key;
-    new_node->height = 1;
-    new_node->left = NULL;
-    new_node->right = NULL;
-
-    return new_node;
 }
 static AVLNode *avl_node_insert(AVLNode *node, int key)
 {
